@@ -10,6 +10,12 @@ namespace psytest.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly TestContext _context;
+        public HomeController(TestContext context)
+        {
+            _context = context;
+        }
+
         public IActionResult Index()
         {
             return View();
@@ -38,6 +44,10 @@ namespace psytest.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+        public IActionResult TestList()
+        {
+            return View(_context.Tests.ToList());
         }
     }
 }

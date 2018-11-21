@@ -60,9 +60,9 @@ namespace psytest.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    TypeId = table.Column<int>(nullable: true),
-                    Text = table.Column<string>(nullable: true),
-                    TestId = table.Column<int>(nullable: true)
+                    TypeId = table.Column<int>(nullable: false),
+                    Text = table.Column<string>(nullable: false),
+                    TestId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -72,13 +72,13 @@ namespace psytest.Migrations
                         column: x => x.TestId,
                         principalTable: "Tests",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Questions_QuestionTypes_TypeId",
                         column: x => x.TypeId,
                         principalTable: "QuestionTypes",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(

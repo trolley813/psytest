@@ -9,7 +9,7 @@ using psytest.Models;
 namespace psytest.Migrations
 {
     [DbContext(typeof(TestContext))]
-    [Migration("20181120092820_InitialCreate")]
+    [Migration("20181121171703_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,11 +23,12 @@ namespace psytest.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int?>("TestId");
+                    b.Property<int>("TestId");
 
-                    b.Property<string>("Text");
+                    b.Property<string>("Text")
+                        .IsRequired();
 
-                    b.Property<int?>("TypeId");
+                    b.Property<int>("TypeId");
 
                     b.HasKey("Id");
 
@@ -106,13 +107,15 @@ namespace psytest.Migrations
 
             modelBuilder.Entity("psytest.Models.Question", b =>
                 {
-                    b.HasOne("psytest.Models.Test")
+                    b.HasOne("psytest.Models.Test", "Test")
                         .WithMany("Questions")
-                        .HasForeignKey("TestId");
+                        .HasForeignKey("TestId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("psytest.Models.QuestionType", "Type")
                         .WithMany()
-                        .HasForeignKey("TypeId");
+                        .HasForeignKey("TypeId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("psytest.Models.QuestionVariant", b =>

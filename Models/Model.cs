@@ -19,6 +19,8 @@ namespace psytest.Models
             builder.Entity<SliderQuestionType>();
             builder.Entity<VariantQuestionType>();
 
+            builder.Entity<Test>().HasMany(t => t.Questions).WithOne(q => q.Test);
+
             base.OnModelCreating(builder);
         }
     }
