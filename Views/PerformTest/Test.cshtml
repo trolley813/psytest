@@ -1,6 +1,81 @@
 @{
     ViewData["Title"] = "Question";
+    ViewBag.Layout = "~/Views/Shared/_Layout.cshtml";
+    String prevClass = ViewBag.QuestionNumber == 1 ? "btn btn-primary disabled" : "btn btn-primary"; 
+    String nextClass = ViewBag.QuestionNumber == ViewBag.QuestionsCount ? "btn btn-primary disabled" : "btn btn-primary"; 
+}
+
+@if(ViewBag.ShouldClearCookies)
+{
+    <script>
+        for (var i = 1; i <= @(ViewBag.QuestionsCount); i++) {
+            document.cookie = "answered_" + i + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+        }
+        location.href = location.href.replace("clearCookies=true", "clearCookies=false");
+    </script>
+}
+
+<h2>Question @(ViewBag.QuestionNumber) of @(ViewBag.QuestionsCount)</h2>
+
+@for (int i = 1; i <= ViewBag.QuestionsCount; i++)
+{
+    String buttonClass = ((ViewBag.Cookies?[$"answered_{i}"] ?? "") != "") ? "btn btn-success" : "btn btn-danger";
+    @if(i == ViewBag.QuestionNumber)
+    {
+        buttonClass += " btn-outline";
+    }
+    <a href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(i)" class="@(buttonClass)">@(i)</a>
+}
+<br>
+
+<p>@(ViewBag.Question.Text)</p>
+
+@if(ViewBag.QuestionType is SliderQuestionType)
+{
+    var slider = ViewBag.QuestionType as SliderQuestionType;
+    int val = slider.MinValue;
+    Int32.TryParse(ViewBag.Cookies?[$"answered_{ViewBag.QuestionNumber}"] ?? "", out val);
+    <p>
+        <b>@(slider.MinValue)   </b>
+        <input id="value-slider" data-slider-id="value-slider-id" type="text"  class="span2"
+               data-slider-min="@(slider.MinValue)" 
+               data-slider-max="@(slider.MaxValue)" 
+               data-slider-step="1" data-slider-value="@(val)"/>
+        <b>   @(slider.MaxValue)</b>
+    </p>
+}
+
+@if(ViewBag.QuestionType is VariantQuestionType)
+{
+    var variant = ViewBag.QuestionType as VariantQuestionType;
+    <p>
+        Select your variant:
+        @foreach (var v in variant.Variants)
+        {
+            <input value=@(v.Text) class="btn btn-large">   
+        }
+    </p>
 }
 
 
-<h2>Question</h2>
+<a href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(ViewBag.QuestionNumber - 1)" 
+   onclick="setAnswered();" class="@(prevClass)">Prev</a>
+<a href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(ViewBag.QuestionNumber + 1)" 
+   onclick="setAnswered();" class="@(nextClass)">Next</a>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#value-slider').slider({
+                tooltip: "always"
+            });
+        });
+    </script>
+    <script>
+        function setAnswered() {
+            var val = $("#value-slider").slider("getValue");
+            document.cookie = 'answered_@(ViewBag.QuestionNumber)=' + val;
+            //alert(document.cookie);
+        }
+    </script>
+}

@@ -19,10 +19,18 @@ namespace psytest.Controllers
             _context = context;
         }
 
-        public IActionResult Test(int testID, int questionNumber)
+        public IActionResult Test(int testID, int questionNumber, bool? clearCookies)
         {
+            // DON'T WORK
+            // if (clearCookies)
+            // {
+            //     foreach (var cookie in Request.Cookies.Keys)
+            //     {
+            //         Response.Cookies.Append(cookie, "");
+            //     }
+            // }
             Console.WriteLine($"Test ID = {testID}, Question No. {questionNumber}");
-            Test test = _context.Tests.Include(t => t.Questions).FirstOrDefault(m => m.Id == testID);
+            Test test = _context.Tests.Include(t => t.Questions).ThenInclude(q => q.Type).FirstOrDefault(m => m.Id == testID);
             if (test == null)
             {
                 return NotFound($"Test with id {testID} Not found");
@@ -34,6 +42,13 @@ namespace psytest.Controllers
                 + $"{questionsCount} questions, {questionNumber} is out of range");
             }
             Question question = test.Questions[questionNumber - 1];
+            ViewBag.TestID = testID;
+            ViewBag.QuestionNumber = questionNumber;
+            ViewBag.QuestionsCount = questionsCount;
+            ViewBag.Question = question;
+            ViewBag.QuestionType = question.Type;
+            ViewBag.Cookies = Request.Cookies;
+            ViewBag.ShouldClearCookies = clearCookies ?? false;
             return View();
         }
     }
