@@ -3,6 +3,7 @@
     ViewBag.Layout = "~/Views/Shared/_Layout.cshtml";
     String prevClass = ViewBag.QuestionNumber == 1 ? "btn btn-primary disabled" : "btn btn-primary"; 
     String nextClass = ViewBag.QuestionNumber == ViewBag.QuestionsCount ? "btn btn-primary disabled" : "btn btn-primary"; 
+    bool canSubmit = true;
 }
 
 @if(ViewBag.ShouldClearCookies)
@@ -19,7 +20,12 @@
 
 @for (int i = 1; i <= ViewBag.QuestionsCount; i++)
 {
-    String buttonClass = ((ViewBag.Cookies?[$"answered_{i}"] ?? "") != "") ? "btn btn-success" : "btn btn-danger";
+    bool answered = ((ViewBag.Cookies?[$"answered_{i}"] ?? "") != "");
+    @if (!answered)
+    { 
+        canSubmit = false;
+    }
+    String buttonClass = answered ? "btn btn-success" : "btn btn-danger";
     @if(i == ViewBag.QuestionNumber)
     {
         buttonClass += " btn-outline";
@@ -28,7 +34,9 @@
 }
 <br>
 
-<p>@(ViewBag.Question.Text)</p>
+<div class="question-text">
+    @(ViewBag.Question.Text)
+</div>
 
 @if(ViewBag.QuestionType is SliderQuestionType)
 {
@@ -62,6 +70,10 @@
    onclick="setAnswered();" class="@(prevClass)">Prev</a>
 <a href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(ViewBag.QuestionNumber + 1)" 
    onclick="setAnswered();" class="@(nextClass)">Next</a>
+@if(canSubmit) 
+{
+    <a class="btn btn-large btn-success">Submit</a>
+}
 
 @section Scripts {
     <script type="text/javascript">

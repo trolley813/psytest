@@ -70,3 +70,10 @@ body {
 .btn-danger.btn-outline:hover {
     color: #fff;
 }
+
+/* Qusetion text */
+.question-text {
+    font-size: 18px;
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
