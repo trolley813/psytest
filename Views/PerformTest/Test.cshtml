@@ -56,13 +56,8 @@
 @if(ViewBag.QuestionType is VariantQuestionType)
 {
     var variant = ViewBag.QuestionType as VariantQuestionType;
-    <p>
-        Select your variant:
-        @foreach (var v in variant.Variants)
-        {
-            <input value=@(v.Text) class="btn btn-large">   
-        }
-    </p>
+    <p>@(ViewBag.Temp)</p>
+    
 }
 
 
