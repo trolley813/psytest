@@ -56,15 +56,22 @@
 @if(ViewBag.QuestionType is VariantQuestionType)
 {
     var variant = ViewBag.QuestionType as VariantQuestionType;
-    <p>@(ViewBag.Temp)</p>
+    <div class="btn-group" data-toggle="buttons">
+        @for(int i = 0; i < variant.Variants.Count; i++)
+        {
+            <label class="btn btn-primary">
+                <input type="radio" name="options" id="option@(i+1)" onclick="setAnswered('@(i+1)');"> @(variant.Variants[i])
+            </label>
+        }
+    </div>
     
 }
 
 
 <a href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(ViewBag.QuestionNumber - 1)" 
-   onclick="setAnswered();" class="@(prevClass)">Prev</a>
+   onclick="setAnswered($('#value-slider').slider('getValue'));" class="@(prevClass)">Prev</a>
 <a href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(ViewBag.QuestionNumber + 1)" 
-   onclick="setAnswered();" class="@(nextClass)">Next</a>
+   onclick="setAnswered($('#value-slider').slider('getValue'));" class="@(nextClass)">Next</a>
 @if(canSubmit) 
 {
     <a class="btn btn-large btn-success">Submit</a>
@@ -79,10 +86,9 @@
         });
     </script>
     <script>
-        function setAnswered() {
-            var val = $("#value-slider").slider("getValue");
+        function setAnswered(val) {
             document.cookie = 'answered_@(ViewBag.QuestionNumber)=' + val;
-            //alert(document.cookie);
+            alert(document.cookie);
         }
     </script>
 }
