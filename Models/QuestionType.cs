@@ -16,12 +16,6 @@ namespace psytest.Models
 
     public class VariantQuestionType : QuestionType
     {
-        public List<QuestionVariant> Variants { get; set; }
-    }
-
-    public class QuestionVariant
-    {
-        public int Id { get; set; }
-        public String Text { get; set; }
+        public List<String> Variants { get; set; }
     }
 }

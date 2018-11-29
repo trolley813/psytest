@@ -1,6 +1,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace psytest.Models
 {
@@ -17,9 +18,16 @@ namespace psytest.Models
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<SliderQuestionType>();
-            builder.Entity<VariantQuestionType>();
+            builder.Entity<VariantQuestionType>().Property(qt => qt.Variants).HasConversion(
+                v => JsonConvert.SerializeObject(v),
+                v => JsonConvert.DeserializeObject<List<String>>(v)
+            );
 
             builder.Entity<Test>().HasMany(t => t.Questions).WithOne(q => q.Test);
+            builder.Entity<Test>().Property(t => t.MetricsDescriptions).HasConversion(
+                v => JsonConvert.SerializeObject(v),
+                v => JsonConvert.DeserializeObject<Dictionary<String, String>>(v)
+            );
 
             base.OnModelCreating(builder);
         }
