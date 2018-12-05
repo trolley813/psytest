@@ -42,15 +42,6 @@ namespace psytest.Controllers
                 + $"{questionsCount} questions, {questionNumber} is out of range");
             }
             Question question = test.Questions[questionNumber - 1];
-            if (question?.Type is VariantQuestionType)
-            {
-                ViewBag.Temp = _context.Questions.Where(q => q.Type is VariantQuestionType)
-                    .Select(q => new { q, (q.Type as VariantQuestionType).Variants })
-                    .AsEnumerable()
-                    .Select(qv => qv.q)
-                    .ToList()
-                    ;
-            }
             ViewBag.TestID = testID;
             ViewBag.QuestionNumber = questionNumber;
             ViewBag.QuestionsCount = questionsCount;
