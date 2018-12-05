@@ -64,7 +64,7 @@
         @for(int i = 0; i < variant.Variants.Count; i++)
         {
             <label class="btn btn-primary">
-                <input type="radio" name="options" id="option@(i+1)" onclick="global_answer='@(i+1)';"> @(variant.Variants[i])
+                <input type="radio" name="options" id="option@(i+1)" onchange="global_answer=@(i+1);" @((ViewBag.Cookies?[$"answered_{i}"] ?? "") == $"{i}" ? "checked" : "unchecked")> @(variant.Variants[i])
             </label>
         }
     </div>
@@ -76,7 +76,7 @@
 
 @if(canSubmit) 
 {
-    <a class="btn btn-large btn-success">Submit</a>
+    <a href="javascript:void(0);" class="btn btn-large btn-success" onclick="submitAnswers();">Submit</a>
 }
 
 @section Scripts {
@@ -88,13 +88,57 @@
         });
     </script>
     <script>
+        // Redirect POST
+        $.extend(
+            {
+                redirectPost: function (location, args) {
+                    var form = $('<form></form>');
+                    form.attr("method", "post");
+                    form.attr("action", location);
+
+                    $.each(args, function (key, value) {
+                        var field = $('<input></input>');
+
+                        field.attr("type", "hidden");
+                        field.attr("name", key);
+                        field.attr("value", value);
+
+                        form.append(field);
+                    });
+                    $(form).appendTo('body').submit();
+                }
+            });
+
         var global_answer;
         function setAnswered(val) {
-            if (val != null) val = global_answer;
-            document.cookie = 'answered_@(ViewBag.QuestionNumber)=' + val;
-            console.log(val);
-            alert(val);
-            alert(document.cookie);
+            if (val == null || val == undefined) val = global_answer;
+               /* if still null or undefined, don't set or spoil the existing answer */
+            if (val == null || val == undefined) return;
+            document.cookie = 'answered_@(ViewBag.QuestionNumber)=' + val;       
+            //alert(val);
+            //alert(document.cookie);
+        }
+
+        function getCookie(name) {
+            var matches = document.cookie.match(new RegExp(
+                "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+            ));
+            return matches ? decodeURIComponent(matches[1]) : undefined;
+        }
+
+        function prepareAnswersForSubmit() {
+            var results = {};
+            for (var i = 1; i <= @(ViewBag.QuestionsCount); i++) {
+                results[i] = parseInt(getCookie("answered_" + i));
+            }
+            return results;
+        }
+
+        function submitAnswers() {
+            var answers = prepareAnswersForSubmit();
+            var test = @(ViewBag.TestID);
+            $.redirectPost("/PerformTest/Submit", { testID: test, results: answers });
+
         }
     </script>
 }

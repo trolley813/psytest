@@ -1,12 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+using Jint;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using psytest.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace psytest.Controllers
 {
@@ -49,6 +47,30 @@ namespace psytest.Controllers
             ViewBag.QuestionType = question.Type;
             ViewBag.Cookies = Request.Cookies;
             ViewBag.ShouldClearCookies = clearCookies ?? false;
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Submit(int testID, Dictionary<int, int> results)
+        {
+            Console.WriteLine($"Test ID = {testID}");
+            foreach (var res in results)
+            {
+                Console.WriteLine($"Answer {res.Key} = {res.Value}");
+            }
+            Test test = _context.Tests.FirstOrDefault(m => m.Id == testID);
+            if (test == null)
+            {
+                return NotFound($"Test with id {testID} Not found");
+            }
+            var metrics = new Engine()
+                .SetValue("questions", results)
+                .SetValue("metrics", new Dictionary<String, Object>())
+                .Execute(test.MetricsComputeScript)
+                .GetValue("metrics");
+            ViewBag.Results = results;
+            ViewBag.Metrics = metrics;
+            ViewBag.MetricDescriptions = test.MetricsDescriptions;
             return View();
         }
     }

@@ -1,0 +1,34 @@
+﻿
+@{
+    ViewData["Title"] = "Results";
+    ViewBag.Layout = "~/Views/Shared/_Layout.cshtml";
+    var metrics = ViewBag.Metrics.ToObject() as Dictionary<String, Object>;
+    var metricDescriptions = ViewBag.MetricDescriptions as Dictionary<String, String>;
+    var results = ViewBag.Results as Dictionary<int, int>;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Submit</title>
+    @foreach (var kv in metrics)
+    {
+        <p> @(kv.Key) </p>
+        <p> @(kv.Value) </p>
+    }
+    @foreach (var kv in metricDescriptions)
+    {
+        <p> @(kv.Key) </p>
+        <p> @(kv.Value) </p>
+    }
+    @foreach (var kv in results)
+    {
+        <p> @(kv.Key) </p>
+        <p> @(kv.Value) </p>
+    }
+</head>
+<body>
+</body>
+</html>
