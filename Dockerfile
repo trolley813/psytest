@@ -10,6 +10,7 @@ RUN dotnet restore
 COPY psytest/. ./psytest/
 WORKDIR /app/psytest
 RUN dotnet publish -c Release -o out
+COPY psytest/tests.sqlite3 /app/psytest/out
 
 
 FROM microsoft/dotnet:2.1-aspnetcore-runtime AS runtime
