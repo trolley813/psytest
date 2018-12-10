@@ -101,7 +101,7 @@
 
                         field.attr("type", "hidden");
                         field.attr("name", key);
-                        field.attr("value", value);
+                        field.attr("value", JSON.stringify(value));
 
                         form.append(field);
                     });
@@ -127,17 +127,16 @@
         }
 
         function prepareAnswersForSubmit() {
-            var results = {};
+            var results = { "testID": @(ViewBag.TestID) };
             for (var i = 1; i <= @(ViewBag.QuestionsCount); i++) {
-                results[i] = parseInt(getCookie("answered_" + i));
+                results["results[" + i+ "]"] = parseInt(getCookie("answered_" + i));
             }
             return results;
         }
-
+        
         function submitAnswers() {
             var answers = prepareAnswersForSubmit();
-            var test = @(ViewBag.TestID);
-            $.redirectPost("/PerformTest/Submit", { testID: test, results: answers });
+            $.redirectPost("/PerformTest/Submit", answers);
 
         }
     </script>

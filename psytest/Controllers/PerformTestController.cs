@@ -51,7 +51,7 @@ namespace psytest.Controllers
         }
 
         [HttpPost]
-        public IActionResult Submit(int testID, Dictionary<int, int> results)
+        public IActionResult Submit(int testID, [FromForm] Dictionary<int, int> results)
         {
             Console.WriteLine($"Test ID = {testID}");
             foreach (var res in results)
