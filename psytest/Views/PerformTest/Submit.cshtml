@@ -13,20 +13,10 @@
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>Submit</title>
+    <h1>Test Results</h1>
     @foreach (var kv in metrics)
     {
-        <p> @(kv.Key) </p>
-        <p> @(kv.Value) </p>
-    }
-    @foreach (var kv in metricDescriptions)
-    {
-        <p> @(kv.Key) </p>
-        <p> @(kv.Value) </p>
-    }
-    @foreach (var kv in results)
-    {
-        <p> @(kv.Key) </p>
-        <p> @(kv.Value) </p>
+    <p> @(metricDescriptions[kv.Key]) = @(kv.Value)</p>
     }
 </head>
 <body>
