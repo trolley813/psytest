@@ -5,6 +5,7 @@
     String nextClass = ViewBag.QuestionNumber == ViewBag.QuestionsCount ? "btn btn-primary disabled" : "btn btn-primary";
     String[] antagonisticVariants = ViewBag.QuestionType is AntagonisticQuestionType ? ViewBag.Question.Text.Split("\n", 2) : new String[2];
     bool canSubmit = true;
+    bool lastQuestionRemaining = false;
 }
 
 @if(ViewBag.ShouldClearCookies)
@@ -24,9 +25,16 @@
     bool answered = ((ViewBag.Cookies?[$"answered_{i}"] ?? "") != "");
     @if (!answered)
     { 
-        canSubmit = false;
+        if (i == ViewBag.QuestionNumber)
+        {
+            lastQuestionRemaining = true;
+        }
+        else
+        {
+            canSubmit = false;
+        }
     }
-    String buttonClass = answered ? "btn btn-success" : "btn btn-danger";
+    String buttonClass = answered ? "btn btn-success btn-margin" : "btn btn-primary btn-margin";
     @if(i == ViewBag.QuestionNumber)
     {
         buttonClass += " btn-outline";
@@ -63,7 +71,7 @@
     var slider = ViewBag.QuestionType as AntagonisticQuestionType;
     int val = slider.MinValue;
     Int32.TryParse(ViewBag.Cookies?[$"answered_{ViewBag.QuestionNumber}"] ?? "", out val);
-    <p>
+    <p class="anta-slider">
         <b>@(slider.MinValue)   </b>
         <input id="value-slider" data-slider-id="value-slider-id" type="text"  class="span2"
                data-slider-min="@(slider.MinValue)" 
@@ -83,7 +91,7 @@
 @if(ViewBag.QuestionType is VariantQuestionType)
 {
     var variant = ViewBag.QuestionType as VariantQuestionType;
-    <div class="btn-group" data-toggle="buttons">
+    <div class="btn-group btn-margin question-variants" data-toggle="buttons">
         @for(int i = 0; i < variant.Variants.Count; i++)
         {
             <label class="btn btn-primary">
@@ -91,6 +99,7 @@
             </label>
         }
     </div>
+    <br>
     <a href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(ViewBag.QuestionNumber - 1)" 
         onclick="setAnswered(null);" class="@(prevClass)">Prev</a>
     <a href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(ViewBag.QuestionNumber + 1)" 
@@ -99,7 +108,7 @@
 
 @if(canSubmit) 
 {
-    <a href="javascript:void(0);" class="btn btn-large btn-success" onclick="submitAnswers();">Submit</a>
+    <a href="javascript:void(0);" class="btn btn-large btn-success" onclick="submitAnswers(@(lastQuestionRemaining));">Submit</a>
 }
 
 @section Scripts {
@@ -133,6 +142,8 @@
             });
 
         var global_answer;
+        var True = true;
+        var False = false;
         function setAnswered(val) {
             if (val == null || val == undefined) val = global_answer;
                /* if still null or undefined, don't set or spoil the existing answer */
@@ -157,7 +168,11 @@
             return results;
         }
         
-        function submitAnswers() {
+        function submitAnswers(lastQuestionRemaining) {
+            if (lastQuestionRemaining)
+            {
+                setAnswered($('#value-slider').slider('getValue'));    
+            }
             var answers = prepareAnswersForSubmit();
             $.redirectPost("/PerformTest/Submit", answers);
 

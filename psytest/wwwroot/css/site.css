@@ -90,3 +90,49 @@ body {
     -webkit-transform: translateX(-50%) translateY(-50%);
     transform: translateX(-50%) translateY(-50%);
 }
+
+.centered-header {
+    align-content: center;
+}
+
+.login-form {
+    -moz-transform: translateX(40%);
+    -webkit-transform: translateX(40%);
+    transform: translateX(40%);
+    margin-top: 40px;   
+}
+
+.test-results {
+    -moz-transform: translateX(35%);
+    -webkit-transform: translateX(35%);
+    transform: translateX(35%);
+    margin-top: 40px;   
+}
+
+.table-metric {
+    padding: 10px;
+    font-size: 16px;
+}
+
+.table-value {
+    padding: 8px;
+    font-size: 20px;
+}
+
+.anta-slider {
+    -moz-transform: translateX(40%);
+    -webkit-transform: translateX(40%);
+    transform: translateX(40%);
+    margin-top: 15px;   
+}
+
+.question-variants {
+    -moz-transform: translateX(65%);
+    -webkit-transform: translateX(65%);
+    transform: translateX(65%);
+    margin-top: 15px;   
+}
+
+.btn-margin {
+    margin: 5px;
+}

@@ -13,11 +13,22 @@
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>Submit</title>
-    <h1>Test Results</h1>
-    @foreach (var kv in metrics)
-    {
-    <p> @(metricDescriptions[kv.Key]) = @(kv.Value)</p>
-    }
+    <h1 align="center">Test Results</h1>
+    <div class="test-results">
+        <table>
+            <tr>
+                <th>Factor</th>
+                <th>Value</th>
+            </tr>
+            @foreach (var kv in metrics)
+            {
+                <tr>
+                    <td class="table-metric">@(metricDescriptions[kv.Key])</td>
+                    <td class="table-value">@(kv.Value)</td>
+                </tr>
+            }
+        </table>
+    </div>
 </head>
 <body>
 </body>
