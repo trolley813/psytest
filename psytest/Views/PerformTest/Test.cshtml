@@ -2,7 +2,8 @@
     ViewData["Title"] = "Question";
     ViewBag.Layout = "~/Views/Shared/_Layout.cshtml";
     String prevClass = ViewBag.QuestionNumber == 1 ? "btn btn-primary disabled" : "btn btn-primary"; 
-    String nextClass = ViewBag.QuestionNumber == ViewBag.QuestionsCount ? "btn btn-primary disabled" : "btn btn-primary"; 
+    String nextClass = ViewBag.QuestionNumber == ViewBag.QuestionsCount ? "btn btn-primary disabled" : "btn btn-primary";
+    String[] antagonisticVariants = ViewBag.QuestionType is AntagonisticQuestionType ? ViewBag.Question.Text.Split("\n", 2) : new String[2];
     bool canSubmit = true;
 }
 
@@ -35,7 +36,7 @@
 <br>
 
 <div class="question-text">
-    @(ViewBag.Question.Text)
+    @(ViewBag.QuestionType is AntagonisticQuestionType ? antagonisticVariants[0] : ViewBag.Question.Text)
 </div>
 
 @if(ViewBag.QuestionType is SliderQuestionType)
@@ -51,6 +52,28 @@
                data-slider-step="1" data-slider-value="@(val)"/>
         <b>   @(slider.MaxValue)</b>
     </p>
+    <a href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(ViewBag.QuestionNumber - 1)" 
+        onclick="setAnswered($('#value-slider').slider('getValue'));" class="@(prevClass)">Prev</a>
+    <a href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(ViewBag.QuestionNumber + 1)" 
+        onclick="setAnswered($('#value-slider').slider('getValue'));" class="@(nextClass)">Next</a>
+}
+
+@if(ViewBag.QuestionType is AntagonisticQuestionType)
+{
+    var slider = ViewBag.QuestionType as AntagonisticQuestionType;
+    int val = slider.MinValue;
+    Int32.TryParse(ViewBag.Cookies?[$"answered_{ViewBag.QuestionNumber}"] ?? "", out val);
+    <p>
+        <b>@(slider.MinValue)   </b>
+        <input id="value-slider" data-slider-id="value-slider-id" type="text"  class="span2"
+               data-slider-min="@(slider.MinValue)" 
+               data-slider-max="@(slider.MaxValue)" 
+               data-slider-step="1" data-slider-value="@(val)"/>
+        <b>   @(slider.MaxValue)</b>
+    </p>
+    <div class="question-text">
+        @(antagonisticVariants[1])
+    </div>
     <a href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(ViewBag.QuestionNumber - 1)" 
         onclick="setAnswered($('#value-slider').slider('getValue'));" class="@(prevClass)">Prev</a>
     <a href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(ViewBag.QuestionNumber + 1)" 

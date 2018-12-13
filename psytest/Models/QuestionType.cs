@@ -14,6 +14,12 @@ namespace psytest.Models
         public int MaxValue { get; set; }
     }
 
+    public class AntagonisticQuestionType: QuestionType
+    {
+        public int MinValue { get; set; }
+        public int MaxValue { get; set; }
+    }
+
     public class VariantQuestionType : QuestionType
     {
         public List<String> Variants { get; set; }

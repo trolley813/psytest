@@ -6,25 +6,27 @@
 
 <h2>Test List</h2>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                <a href="/PerformTest/Test?testID=@(item.Id)&questionNumber=1&clearCookies=true">Go</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<div class="centered">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Name)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+    @foreach (var item in Model) {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    <a href="/PerformTest/Test?testID=@(item.Id)&questionNumber=1&clearCookies=true">Go</a>
+                </td>
+            </tr>
+    }
+        </tbody>
+    </table>
+</div>

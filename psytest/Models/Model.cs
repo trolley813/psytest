@@ -18,6 +18,7 @@ namespace psytest.Models
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<SliderQuestionType>();
+            builder.Entity<AntagonisticQuestionType>();
             builder.Entity<VariantQuestionType>().Property(qt => qt.Variants).HasConversion(
                 v => JsonConvert.SerializeObject(v),
                 v => JsonConvert.DeserializeObject<List<String>>(v)
