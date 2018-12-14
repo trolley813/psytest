@@ -127,9 +127,9 @@ body {
 }
 
 .question-variants {
-    -moz-transform: translateX(65%);
-    -webkit-transform: translateX(65%);
-    transform: translateX(65%);
+    -moz-transform: translateX(96%);
+    -webkit-transform: translateX(96%);
+    transform: translateX(96%);
     margin-top: 15px;   
 }
 

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using psytest.Models;
 
 namespace psytest.Controllers
@@ -45,6 +46,8 @@ namespace psytest.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+        [Authorize(Roles = "Administrator, User")]
         public IActionResult TestList()
         {
             return View(_context.Tests.ToList());

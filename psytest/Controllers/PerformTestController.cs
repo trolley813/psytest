@@ -1,5 +1,6 @@
 using Jint;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using psytest.Models;
 using System;
@@ -8,6 +9,7 @@ using System.Linq;
 
 namespace psytest.Controllers
 {
+    [Authorize(Roles = "Administrator, User")]
     public class PerformTestController : Controller
     {
         private readonly TestContext _context;
