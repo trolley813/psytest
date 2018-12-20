@@ -33,4 +33,23 @@ namespace psytest.Models
             base.OnModelCreating(builder);
         }
     }
+
+    public class TestResultContext : DbContext
+    {
+        public TestResultContext(DbContextOptions<TestResultContext> options)
+                    : base(options)
+        { }
+
+        public DbSet<TestResult> TestResults { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            builder.Entity<TestResult>().Property(t => t.Metrics).HasConversion(
+                v => JsonConvert.SerializeObject(v),
+                v => JsonConvert.DeserializeObject<Dictionary<String, Object>> (v)
+            );
+
+            base.OnModelCreating(builder);
+        }
+    }
 }

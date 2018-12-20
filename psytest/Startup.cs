@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -11,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using psytest.Models;
+using psytest.Areas.Identity.Data;
 
 namespace psytest
 {
@@ -36,13 +39,15 @@ namespace psytest
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            var connection = "Data Source=tests.sqlite3";
             services.AddDbContext<TestContext>
-                (options => options.UseSqlite(connection));
+                (options => options.UseSqlite(Configuration.GetConnectionString("TestContextConnection")));
+
+            services.AddDbContext<TestResultContext>
+                (options => options.UseSqlite(Configuration.GetConnectionString("TestResultContextConnection")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider services)
         {
             if (env.IsDevelopment())
             {
@@ -66,6 +71,29 @@ namespace psytest
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            CreateRoles(services).Wait();
+        }
+
+        private async Task CreateRoles(IServiceProvider serviceProvider)
+        {
+            var RoleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            var UserManager = serviceProvider.GetRequiredService<UserManager<TestingUser>>();
+
+            IdentityResult roleResult;
+            // Adding Admin Role
+            var roleCheck1 = await RoleManager.RoleExistsAsync("Administrator");
+            var roleCheck2 = await RoleManager.RoleExistsAsync("User");
+            if (!roleCheck1)
+            {
+                // create the roles and seed them to the database
+                roleResult = await RoleManager.CreateAsync(new IdentityRole("Administrator"));
+            }
+            if (!roleCheck2)
+            {
+                // create the roles and seed them to the database
+                roleResult = await RoleManager.CreateAsync(new IdentityRole("User"));
+            }
         }
     }
 }
