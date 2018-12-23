@@ -1,14 +1,14 @@
 @{
     ViewData["Title"] = "Question";
     ViewBag.Layout = "~/Views/Shared/_Layout.cshtml";
-    String prevClass = ViewBag.QuestionNumber == 1 ? "btn btn-primary disabled" : "btn btn-primary"; 
+    String prevClass = ViewBag.QuestionNumber == 1 ? "btn btn-primary disabled" : "btn btn-primary";
     String nextClass = ViewBag.QuestionNumber == ViewBag.QuestionsCount ? "btn btn-primary disabled" : "btn btn-primary";
     String[] antagonisticVariants = ViewBag.QuestionType is AntagonisticQuestionType ? ViewBag.Question.Text.Split("\n", 2) : new String[2];
     bool canSubmit = true;
     bool lastQuestionRemaining = false;
 }
 
-@if(ViewBag.ShouldClearCookies)
+@if (ViewBag.ShouldClearCookies)
 {
     <script>
         for (var i = 1; i <= @(ViewBag.QuestionsCount); i++) {
@@ -20,11 +20,103 @@
 
 <h2>Question @(ViewBag.QuestionNumber) of @(ViewBag.QuestionsCount)</h2>
 
+<div class="instruction-text">
+    @(ViewBag.Instruction)
+</div>
+
+@if (ViewBag.QuestionType is SliderQuestionType)
+{
+    <div class="question-text">
+        @(ViewBag.Question.Text)
+    </div>
+    var slider = ViewBag.QuestionType as SliderQuestionType;
+    int val = slider.MinValue;
+    Int32.TryParse(ViewBag.Cookies?[$"answered_{ViewBag.QuestionNumber}"] ?? "", out val);
+    <p>
+        <b>@(slider.MinValue)   </b>
+        <input id="value-slider" data-slider-id="value-slider-id" type="text" class="span2"
+               data-slider-min="@(slider.MinValue)"
+               data-slider-max="@(slider.MaxValue)"
+               data-slider-step="1" data-slider-value="@(val)" />
+        <b>   @(slider.MaxValue)</b>
+    </p>
+    <a href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(ViewBag.QuestionNumber - 1)"
+       onclick="setAnswered($('#value-slider').slider('getValue'));" class="@(prevClass)">Prev</a>
+    <a href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(ViewBag.QuestionNumber + 1)"
+       onclick="setAnswered($('#value-slider').slider('getValue'));" class="@(nextClass)">Next</a>
+}
+
+@if (ViewBag.QuestionType is AntagonisticQuestionType)
+{
+    var slider = ViewBag.QuestionType as AntagonisticQuestionType;
+    int val = slider.MinValue;
+    Int32.TryParse(ViewBag.Cookies?[$"answered_{ViewBag.QuestionNumber}"] ?? "", out val);
+    int[] allVariants = Enumerable.Range(slider.MinValue, slider.MaxValue - slider.MinValue + 1).ToArray();
+    String sliderTicks = "[" + String.Join(", ", allVariants.Select(v => $"{v}")) + "]";
+    String quote = "\"";
+    String sliderTicksLabels = "[" + String.Join(", ", allVariants.Select(v => $"{quote}{Math.Abs(v)}{quote}")) + "]";
+    <table style="width:80%; max-width:80%; word-wrap:break-word;">
+        <tr>
+            <td style="table-layout:fixed; width:40%; max-width:40%; word-wrap:break-word;">
+                <div class="anta-question-text">
+                    @(antagonisticVariants[0])
+                </div>
+            </td>
+            <td style="width:20%; max-width:20%;">
+                <p class="anta-slider">
+                    <input id="value-slider" data-slider-id="value-slider-id" type="text" class="span2"
+                           data-slider-min="@(slider.MinValue)"
+                           data-slider-max="@(slider.MaxValue)"
+                           data-slider-ticks="@(sliderTicks)"
+                           data-slider-ticks-labels="@(sliderTicksLabels)"
+                           data-slider-step="1" data-slider-value="@(val)" />
+                </p>
+            </td>
+            <td style="width:40%; max-width:40%; word-wrap:break-word;">
+                <div class="anta-question-text">
+                    @(antagonisticVariants[1])
+                </div>
+            </td>
+        </tr>
+    </table>
+    <a href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(ViewBag.QuestionNumber - 1)"
+       onclick="setAnswered($('#value-slider').slider('getValue'));" class="@(prevClass)">Prev</a>
+    <a href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(ViewBag.QuestionNumber + 1)"
+       onclick="setAnswered($('#value-slider').slider('getValue'));" class="@(nextClass)">Next</a>
+}
+
+@if (ViewBag.QuestionType is VariantQuestionType)
+{
+    <div class="question-text">
+        @(ViewBag.Question.Text)
+    </div>
+    var variant = ViewBag.QuestionType as VariantQuestionType;
+    <div class="btn-group btn-margin question-variants" data-toggle="buttons">
+        @for (int i = 0; i < variant.Variants.Count; i++)
+        {
+            <label class="btn btn-primary btn-block">
+                <input type="radio" name="options" id="option@(i+1)" onchange="global_answer=@(i+1);" @((ViewBag.Cookies?[$"answered_{i}"] ?? "") == $"{i}" ? "checked" : "unchecked")> @(variant.Variants[i])
+            </label>
+        }
+    </div>
+    <br>
+    <a href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(ViewBag.QuestionNumber - 1)"
+       onclick="setAnswered(null);" class="@(prevClass)">Prev</a>
+    <a href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(ViewBag.QuestionNumber + 1)"
+       onclick="setAnswered(null);" class="@(nextClass)">Next</a>
+}
+
+@if (canSubmit)
+{
+    <a href="javascript:void(0);" class="btn btn-large btn-success" onclick="submitAnswers(@(lastQuestionRemaining));">Submit</a>
+}
+
+<br>
 @for (int i = 1; i <= ViewBag.QuestionsCount; i++)
 {
     bool answered = ((ViewBag.Cookies?[$"answered_{i}"] ?? "") != "");
     @if (!answered)
-    { 
+    {
         if (i == ViewBag.QuestionNumber)
         {
             lastQuestionRemaining = true;
@@ -35,87 +127,20 @@
         }
     }
     String buttonClass = answered ? "btn btn-success btn-margin" : "btn btn-primary btn-margin";
-    @if(i == ViewBag.QuestionNumber)
+    @if (i == ViewBag.QuestionNumber)
     {
         buttonClass += " btn-outline";
     }
     <a href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(i)" class="@(buttonClass)">@(i)</a>
 }
-<br>
 
-<div class="question-text">
-    @(ViewBag.QuestionType is AntagonisticQuestionType ? antagonisticVariants[0] : ViewBag.Question.Text)
-</div>
-
-@if(ViewBag.QuestionType is SliderQuestionType)
-{
-    var slider = ViewBag.QuestionType as SliderQuestionType;
-    int val = slider.MinValue;
-    Int32.TryParse(ViewBag.Cookies?[$"answered_{ViewBag.QuestionNumber}"] ?? "", out val);
-    <p>
-        <b>@(slider.MinValue)   </b>
-        <input id="value-slider" data-slider-id="value-slider-id" type="text"  class="span2"
-               data-slider-min="@(slider.MinValue)" 
-               data-slider-max="@(slider.MaxValue)" 
-               data-slider-step="1" data-slider-value="@(val)"/>
-        <b>   @(slider.MaxValue)</b>
-    </p>
-    <a href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(ViewBag.QuestionNumber - 1)" 
-        onclick="setAnswered($('#value-slider').slider('getValue'));" class="@(prevClass)">Prev</a>
-    <a href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(ViewBag.QuestionNumber + 1)" 
-        onclick="setAnswered($('#value-slider').slider('getValue'));" class="@(nextClass)">Next</a>
-}
-
-@if(ViewBag.QuestionType is AntagonisticQuestionType)
-{
-    var slider = ViewBag.QuestionType as AntagonisticQuestionType;
-    int val = slider.MinValue;
-    Int32.TryParse(ViewBag.Cookies?[$"answered_{ViewBag.QuestionNumber}"] ?? "", out val);
-    <p class="anta-slider">
-        <b>@(slider.MinValue)   </b>
-        <input id="value-slider" data-slider-id="value-slider-id" type="text"  class="span2"
-               data-slider-min="@(slider.MinValue)" 
-               data-slider-max="@(slider.MaxValue)" 
-               data-slider-step="1" data-slider-value="@(val)"/>
-        <b>   @(slider.MaxValue)</b>
-    </p>
-    <div class="question-text">
-        @(antagonisticVariants[1])
-    </div>
-    <a href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(ViewBag.QuestionNumber - 1)" 
-        onclick="setAnswered($('#value-slider').slider('getValue'));" class="@(prevClass)">Prev</a>
-    <a href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(ViewBag.QuestionNumber + 1)" 
-        onclick="setAnswered($('#value-slider').slider('getValue'));" class="@(nextClass)">Next</a>
-}
-
-@if(ViewBag.QuestionType is VariantQuestionType)
-{
-    var variant = ViewBag.QuestionType as VariantQuestionType;
-    <div class="btn-group btn-margin question-variants" data-toggle="buttons">
-        @for(int i = 0; i < variant.Variants.Count; i++)
-        {
-            <label class="btn btn-primary">
-                <input type="radio" name="options" id="option@(i+1)" onchange="global_answer=@(i+1);" @((ViewBag.Cookies?[$"answered_{i}"] ?? "") == $"{i}" ? "checked" : "unchecked")> @(variant.Variants[i])
-            </label>
-        }
-    </div>
-    <br>
-    <a href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(ViewBag.QuestionNumber - 1)" 
-        onclick="setAnswered(null);" class="@(prevClass)">Prev</a>
-    <a href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(ViewBag.QuestionNumber + 1)" 
-        onclick="setAnswered(null);" class="@(nextClass)">Next</a>
-}
-
-@if(canSubmit) 
-{
-    <a href="javascript:void(0);" class="btn btn-large btn-success" onclick="submitAnswers(@(lastQuestionRemaining));">Submit</a>
-}
 
 @section Scripts {
     <script type="text/javascript">
-        $(document).ready(function() {
+        $(document).ready(function () {
             $('#value-slider').slider({
-                tooltip: "always"
+                ticks: $('#value-slider').prop("data-slider-ticks"),
+                ticks_labels: $('#value-slider').prop("data-slider-ticks-labels")
             });
         });
     </script>
@@ -148,7 +173,7 @@
             if (val == null || val == undefined) val = global_answer;
                /* if still null or undefined, don't set or spoil the existing answer */
             if (val == null || val == undefined) return;
-            document.cookie = 'answered_@(ViewBag.QuestionNumber)=' + val;       
+            document.cookie = 'answered_@(ViewBag.QuestionNumber)=' + val;
             //alert(val);
             //alert(document.cookie);
         }
@@ -167,11 +192,11 @@
             }
             return results;
         }
-        
+
         function submitAnswers(lastQuestionRemaining) {
             if (lastQuestionRemaining)
             {
-                setAnswered($('#value-slider').slider('getValue'));    
+                setAnswered($('#value-slider').slider('getValue'));
             }
             var answers = prepareAnswersForSubmit();
             $.redirectPost("/PerformTest/Submit", answers);

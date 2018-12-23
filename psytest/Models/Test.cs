@@ -7,6 +7,7 @@ namespace psytest.Models
     {
         public int Id { get; set; }
         public String Name { get; set; }
+        public String Instruction { get; set; }
         public List<Question> Questions { get; set; }
 
         // JS code

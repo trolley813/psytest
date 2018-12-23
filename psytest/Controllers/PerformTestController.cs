@@ -43,6 +43,7 @@ namespace psytest.Controllers
             }
             Question question = test.Questions[questionNumber - 1];
             ViewBag.TestID = testID;
+            ViewBag.Instruction = test.Instruction;
             ViewBag.QuestionNumber = questionNumber;
             ViewBag.QuestionsCount = questionsCount;
             ViewBag.Question = question;
