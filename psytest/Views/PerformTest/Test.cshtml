@@ -1,11 +1,19 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
 @{
     ViewData["Title"] = "Question";
     ViewBag.Layout = "~/Views/Shared/_Layout.cshtml";
-    String prevClass = ViewBag.QuestionNumber == 1 ? "btn btn-primary disabled" : "btn btn-primary";
-    String nextClass = ViewBag.QuestionNumber == ViewBag.QuestionsCount ? "btn btn-primary disabled" : "btn btn-primary";
+    String prevClass = ViewBag.QuestionNumber == 1 ? "btn btn-primary btn-fw disabled" : "btn btn-primary btn-fw";
+    String nextClass = ViewBag.QuestionNumber == ViewBag.QuestionsCount ? "btn btn-primary btn-fw disabled" : "btn btn-primary btn-fw";
     String[] antagonisticVariants = ViewBag.QuestionType is AntagonisticQuestionType ? ViewBag.Question.Text.Split("\n", 2) : new String[2];
     bool canSubmit = true;
     bool lastQuestionRemaining = false;
+
+    ViewData["Prev"] = Localizer["Prev"];
+    ViewData["Next"] = Localizer["Next"];
+    ViewData["Submit"] = Localizer["Submit"];
+    ViewData["QuestionFormat"] = Localizer["QuestionFormat"];
 }
 
 @if (ViewBag.ShouldClearCookies)
@@ -18,7 +26,7 @@
     </script>
 }
 
-<h2>Question @(ViewBag.QuestionNumber) of @(ViewBag.QuestionsCount)</h2>
+<h2>@(String.Format((ViewData["QuestionFormat"] as LocalizedHtmlString).Value, ViewBag.QuestionNumber, ViewBag.QuestionsCount))</h2>
 
 <div class="instruction-text">
     @(ViewBag.Instruction)
@@ -41,9 +49,9 @@
         <b>   @(slider.MaxValue)</b>
     </p>
     <a href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(ViewBag.QuestionNumber - 1)"
-       onclick="setAnswered($('#value-slider').slider('getValue'));" class="@(prevClass)">Prev</a>
+       onclick="setAnswered($('#value-slider').slider('getValue'));" class="@(prevClass)">@(ViewData["Prev"])</a>
     <a href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(ViewBag.QuestionNumber + 1)"
-       onclick="setAnswered($('#value-slider').slider('getValue'));" class="@(nextClass)">Next</a>
+       onclick="setAnswered($('#value-slider').slider('getValue'));" class="@(nextClass)">@(ViewData["Next"])</a>
 }
 
 @if (ViewBag.QuestionType is AntagonisticQuestionType)
@@ -80,9 +88,9 @@
         </tr>
     </table>
     <a href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(ViewBag.QuestionNumber - 1)"
-       onclick="setAnswered($('#value-slider').slider('getValue'));" class="@(prevClass)">Prev</a>
+       onclick="setAnswered($('#value-slider').slider('getValue'));" class="@(prevClass)">@(ViewData["Prev"])</a>
     <a href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(ViewBag.QuestionNumber + 1)"
-       onclick="setAnswered($('#value-slider').slider('getValue'));" class="@(nextClass)">Next</a>
+       onclick="setAnswered($('#value-slider').slider('getValue'));" class="@(nextClass)">@(ViewData["Next"])</a>
 }
 
 @if (ViewBag.QuestionType is VariantQuestionType)
@@ -101,18 +109,12 @@
     </div>
     <br>
     <a href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(ViewBag.QuestionNumber - 1)"
-       onclick="setAnswered(null);" class="@(prevClass)">Prev</a>
+       onclick="setAnswered(null);" class="@(prevClass)">@(ViewData["Prev"])</a>
     <a href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(ViewBag.QuestionNumber + 1)"
-       onclick="setAnswered(null);" class="@(nextClass)">Next</a>
+       onclick="setAnswered(null);" class="@(nextClass)">@(ViewData["Next"])</a>
 }
 
-@if (canSubmit)
-{
-    <a href="javascript:void(0);" class="btn btn-large btn-success" onclick="submitAnswers(@(lastQuestionRemaining));">Submit</a>
-}
-
-<br>
-@for (int i = 1; i <= ViewBag.QuestionsCount; i++)
+@for(int i = 1; i <= ViewBag.QuestionsCount; i++)
 {
     bool answered = ((ViewBag.Cookies?[$"answered_{i}"] ?? "") != "");
     @if (!answered)
@@ -126,6 +128,17 @@
             canSubmit = false;
         }
     }
+}
+
+@if (canSubmit)
+{
+    <a href="javascript:void(0);" class="btn btn-large btn-success btn-fw" onclick="submitAnswers(@(lastQuestionRemaining));">@(ViewData["Submit"])</a>
+}
+
+<br>
+@for (int i = 1; i <= ViewBag.QuestionsCount; i++)
+{
+    bool answered = ((ViewBag.Cookies?[$"answered_{i}"] ?? "") != "");
     String buttonClass = answered ? "btn btn-success btn-margin" : "btn btn-primary btn-margin";
     @if (i == ViewBag.QuestionNumber)
     {

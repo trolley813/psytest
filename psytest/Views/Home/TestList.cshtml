@@ -1,10 +1,13 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @model IEnumerable<psytest.Models.Test>
 
 @{
     ViewData["Title"] = "Index";
+    ViewData["TestList"] = Localizer["TestList"];
 }
 
-<h2>Test List</h2>
+<h2>@(ViewData["TestList"])</h2>
 
 <div class="centered">
     <table class="table">

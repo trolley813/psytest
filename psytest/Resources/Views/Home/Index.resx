@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="Welcome" xml:space="preserve">
+    <value>Welcome to psychological testing app</value>
+  </data>
+  <data name="GoToTesting" xml:space="preserve">
+    <value>Go to testing</value>
+  </data>
+</root>

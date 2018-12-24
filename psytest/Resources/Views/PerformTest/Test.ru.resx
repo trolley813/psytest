@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="Prev" xml:space="preserve">
+    <value>Предыдущий</value>
+  </data>
+  <data name="Next" xml:space="preserve">
+    <value>Следующий</value>
+  </data>
+  <data name="Submit" xml:space="preserve">
+    <value>Отправить</value>
+  </data>
+  <data name="QuestionFormat" xml:space="preserve">
+    <value>Вопрос {0} из {1}</value>
+  </data>
+</root>

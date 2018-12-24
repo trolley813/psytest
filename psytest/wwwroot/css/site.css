@@ -154,3 +154,7 @@ body {
 .btn-margin {
     margin: 5px;
 }
+
+.btn-fw {
+    width: 128px !important;
+}

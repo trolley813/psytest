@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="Welcome" xml:space="preserve">
+    <value>Добро пожаловать в программу психологического тестирования </value>
+  </data>
+  <data name="GoToTesting" xml:space="preserve">
+    <value>Перейти к тестированию </value>
+  </data>
+</root>

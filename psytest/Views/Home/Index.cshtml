@@ -1,9 +1,14 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+@{
     ViewData["Title"] = "Home Page";
+    ViewData["Welcome"] = Localizer["Welcome"];
+    ViewData["GoToTesting"] = Localizer["GoToTesting"];
 }
 
 
-<h2 align="center">Welcome to Psychological Testing</h2>
+<h2 align="center">@(ViewData["Welcome"])</h2>
 <div class="login-form">
-    <a class="btn btn-large btn-success" href="/Home/TestList">Go to testing!</a>
+    <a class="btn btn-large btn-success" href="/Home/TestList">@(ViewData["GoToTesting"])</a>
 </div>
