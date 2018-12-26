@@ -144,7 +144,7 @@
     {
         buttonClass += " btn-outline";
     }
-    <a href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(i)" class="@(buttonClass)">@(i)</a>
+    <a href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(i)" class="@(buttonClass)" disabled>@(i)</a>
 }
 
 
@@ -153,7 +153,11 @@
         $(document).ready(function () {
             $('#value-slider').slider({
                 ticks: $('#value-slider').prop("data-slider-ticks"),
-                ticks_labels: $('#value-slider').prop("data-slider-ticks-labels")
+                ticks_labels: $('#value-slider').prop("data-slider-ticks-labels"),
+                selection: "none",
+                tooltip: "hide"
+            }).on("slideStop", function() {
+                $('.slider-handle').css("opacity", 1.0);
             });
         });
     </script>
