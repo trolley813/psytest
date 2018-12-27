@@ -1,10 +1,15 @@
-﻿
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
 @{
     ViewData["Title"] = "Results";
     ViewBag.Layout = "~/Views/Shared/_Layout.cshtml";
     var metrics = ViewBag.Metrics.ToObject() as Dictionary<String, Object>;
     var metricDescriptions = ViewBag.MetricDescriptions as Dictionary<String, String>;
     var results = ViewBag.Results as Dictionary<int, int>;
+    ViewData["TestResults"] = Localizer["TestResults"];
+    ViewData["Factor"] = Localizer["Factor"];
+    ViewData["Value"] = Localizer["Value"];
 }
 
 <!DOCTYPE html>
@@ -13,12 +18,12 @@
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>Submit</title>
-    <h1 align="center">Test Results</h1>
+    <h1 align="center">@(ViewData["TestResults"])</h1>
     <div class="test-results">
-        <table>
+        <table style="font-size:110%">
             <tr>
-                <th>Factor</th>
-                <th>Value</th>
+                <th>@(ViewData["Factor"])</th>
+                <th>@(ViewData["Value"])</th>
             </tr>
             @foreach (var kv in metrics)
             {

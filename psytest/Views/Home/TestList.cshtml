@@ -5,16 +5,18 @@
 @{
     ViewData["Title"] = "Index";
     ViewData["TestList"] = Localizer["TestList"];
+    ViewData["ChooseTest"] = Localizer["ChooseTest"];
+    ViewData["StartTesting"] = Localizer["StartTesting"];
 }
 
 <h2>@(ViewData["TestList"])</h2>
 
 <div class="centered">
-    <table class="table">
+    <table class="table" style="font-size: 22px;">
         <thead>
             <tr>
                 <th>
-                    @Html.DisplayNameFor(model => model.Name)
+                    @(ViewData["ChooseTest"])
                 </th>
                 <th></th>
             </tr>
@@ -26,7 +28,7 @@
                     @Html.DisplayFor(modelItem => item.Name)
                 </td>
                 <td>
-                    <a href="/PerformTest/Test?testID=@(item.Id)&questionNumber=1&clearCookies=true">Go</a>
+                    <a class="btn btn-success" href="/PerformTest/Test?testID=@(item.Id)&questionNumber=1&clearCookies=true">@(ViewData["StartTesting"])</a>
                 </td>
             </tr>
     }

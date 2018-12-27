@@ -6,7 +6,6 @@
     ViewBag.Layout = "~/Views/Shared/_Layout.cshtml";
     String prevClass = ViewBag.QuestionNumber == 1 ? "btn btn-primary btn-fw disabled" : "btn btn-primary btn-fw";
     String nextClass = ViewBag.QuestionNumber == ViewBag.QuestionsCount ? "btn btn-primary btn-fw disabled" : "btn btn-primary btn-fw";
-    String[] antagonisticVariants = ViewBag.QuestionType is AntagonisticQuestionType ? ViewBag.Question.Text.Split("\n", 2) : new String[2];
     bool canSubmit = true;
     bool lastQuestionRemaining = false;
 
@@ -41,17 +40,17 @@
     int val = slider.MinValue;
     Int32.TryParse(ViewBag.Cookies?[$"answered_{ViewBag.QuestionNumber}"] ?? "", out val);
     <p>
-        <b>@(slider.MinValue)   </b>
         <input id="value-slider" data-slider-id="value-slider-id" type="text" class="span2"
                data-slider-min="@(slider.MinValue)"
                data-slider-max="@(slider.MaxValue)"
                data-slider-step="1" data-slider-value="@(val)" />
-        <b>   @(slider.MaxValue)</b>
     </p>
-    <a href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(ViewBag.QuestionNumber - 1)"
-       onclick="setAnswered($('#value-slider').slider('getValue'));" class="@(prevClass)">@(ViewData["Prev"])</a>
-    <a href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(ViewBag.QuestionNumber + 1)"
-       onclick="setAnswered($('#value-slider').slider('getValue'));" class="@(nextClass)">@(ViewData["Next"])</a>
+    <div class="centered-buttons">
+        <a href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(ViewBag.QuestionNumber - 1)"
+           onclick="setAnswered($('#value-slider').slider('getValue'));" class="@(prevClass)">@(ViewData["Prev"])</a>
+        <a href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(ViewBag.QuestionNumber + 1)"
+           onclick="setAnswered($('#value-slider').slider('getValue'));" class="@(nextClass)">@(ViewData["Next"])</a>
+    </div>
 }
 
 @if (ViewBag.QuestionType is AntagonisticQuestionType)
@@ -63,11 +62,21 @@
     String sliderTicks = "[" + String.Join(", ", allVariants.Select(v => $"{v}")) + "]";
     String quote = "\"";
     String sliderTicksLabels = "[" + String.Join(", ", allVariants.Select(v => $"{quote}{Math.Abs(v)}{quote}")) + "]";
-    <table style="width:80%; max-width:80%; word-wrap:break-word;">
+    String[] antagonisticVariants = ViewBag.Question.Text.Split("\n", 3);
+    int avLength = antagonisticVariants.Length;
+    String avLeft = antagonisticVariants[avLength == 3 ? 1 : 0];
+    String avRight = antagonisticVariants[avLength == 3 ? 2 : 1];
+    @if (avLength == 3)
+    {
+        <div class="question-text">
+            @(antagonisticVariants[0])
+        </div>
+    }
+    <table style="margin-left:auto; margin-right:auto; width:80%; max-width:80%; word-wrap:break-word;">
         <tr>
             <td style="table-layout:fixed; width:40%; max-width:40%; word-wrap:break-word;">
                 <div class="anta-question-text">
-                    @(antagonisticVariants[0])
+                    @(avLeft)
                 </div>
             </td>
             <td style="width:20%; max-width:20%;">
@@ -82,15 +91,17 @@
             </td>
             <td style="width:40%; max-width:40%; word-wrap:break-word;">
                 <div class="anta-question-text">
-                    @(antagonisticVariants[1])
+                    @(avRight)
                 </div>
             </td>
         </tr>
     </table>
-    <a href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(ViewBag.QuestionNumber - 1)"
-       onclick="setAnswered($('#value-slider').slider('getValue'));" class="@(prevClass)">@(ViewData["Prev"])</a>
-    <a href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(ViewBag.QuestionNumber + 1)"
-       onclick="setAnswered($('#value-slider').slider('getValue'));" class="@(nextClass)">@(ViewData["Next"])</a>
+    <div class="centered-buttons">
+        <a href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(ViewBag.QuestionNumber - 1)"
+           onclick="setAnswered($('#value-slider').slider('getValue'));" class="@(prevClass)">@(ViewData["Prev"])</a>
+        <a href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(ViewBag.QuestionNumber + 1)"
+           onclick="setAnswered($('#value-slider').slider('getValue'));" class="@(nextClass)">@(ViewData["Next"])</a>
+    </div>
 }
 
 @if (ViewBag.QuestionType is VariantQuestionType)
@@ -99,22 +110,24 @@
         @(ViewBag.Question.Text)
     </div>
     var variant = ViewBag.QuestionType as VariantQuestionType;
-    <div class="btn-group btn-margin question-variants" data-toggle="buttons">
+    <div class="btn-group btn-group-justified btn-margin question-variants" data-toggle="buttons">
         @for (int i = 0; i < variant.Variants.Count; i++)
         {
-            <label class="btn btn-primary btn-block">
+            <label class="btn btn-primary">
                 <input type="radio" name="options" id="option@(i+1)" onchange="global_answer=@(i+1);" @((ViewBag.Cookies?[$"answered_{i}"] ?? "") == $"{i}" ? "checked" : "unchecked")> @(variant.Variants[i])
             </label>
         }
     </div>
     <br>
-    <a href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(ViewBag.QuestionNumber - 1)"
-       onclick="setAnswered(null);" class="@(prevClass)">@(ViewData["Prev"])</a>
-    <a href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(ViewBag.QuestionNumber + 1)"
-       onclick="setAnswered(null);" class="@(nextClass)">@(ViewData["Next"])</a>
+    <div class="centered-buttons">
+        <a href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(ViewBag.QuestionNumber - 1)"
+           onclick="setAnswered(null);" class="@(prevClass)">@(ViewData["Prev"])</a>
+        <a href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(ViewBag.QuestionNumber + 1)"
+           onclick="setAnswered(null);" class="@(nextClass)">@(ViewData["Next"])</a>
+    </div>
 }
 
-@for(int i = 1; i <= ViewBag.QuestionsCount; i++)
+@for (int i = 1; i <= ViewBag.QuestionsCount; i++)
 {
     bool answered = ((ViewBag.Cookies?[$"answered_{i}"] ?? "") != "");
     @if (!answered)
@@ -132,21 +145,34 @@
 
 @if (canSubmit)
 {
-    <a href="javascript:void(0);" class="btn btn-large btn-success btn-fw" onclick="submitAnswers(@(lastQuestionRemaining));">@(ViewData["Submit"])</a>
+    <div class="centered-button-submit">
+        <a href="javascript:void(0);" class="btn btn-large btn-success btn-fw" onclick="submitAnswers(@(lastQuestionRemaining));">@(ViewData["Submit"])</a>
+    </div>
 }
 
-<br>
-@for (int i = 1; i <= ViewBag.QuestionsCount; i++)
-{
-    bool answered = ((ViewBag.Cookies?[$"answered_{i}"] ?? "") != "");
-    String buttonClass = answered ? "btn btn-success btn-margin" : "btn btn-primary btn-margin";
-    @if (i == ViewBag.QuestionNumber)
+<hr style="height:30pt; visibility:hidden;" />
+
+<form>
+    @for (int i = 1; i <= ViewBag.QuestionsCount; i++)
     {
-        buttonClass += " btn-outline";
-    }
-    <a href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(i)" class="@(buttonClass)" disabled>@(i)</a>
-}
+        bool answered = ((ViewBag.Cookies?[$"answered_{i}"] ?? "") != "");
+        String buttonClass = answered ? "btn btn-success btn-margin" : "btn btn-primary btn-margin";
+        @if (i == ViewBag.QuestionNumber)
+        {
+            buttonClass += " btn-outline";
+        }
+        if (answered)
+        {
+            <label class="checkbox-inline"><input type="checkbox" value="" disabled="disabled" checked>@(i)</label>
 
+        }
+        else
+        {
+            <label class="checkbox-inline"><input type="checkbox" value="" disabled="disabled">@(i)</label>
+
+        }
+    }
+</form>
 
 @section Scripts {
     <script type="text/javascript">
@@ -156,9 +182,12 @@
                 ticks_labels: $('#value-slider').prop("data-slider-ticks-labels"),
                 selection: "none",
                 tooltip: "hide"
-            }).on("slideStop", function() {
+            }).on("slideStop", function () {
                 $('.slider-handle').css("opacity", 1.0);
-            });
+                });
+            if (getCookie("answered_" + @(ViewBag.QuestionNumber)) != undefined) {
+                $('.slider-handle').css("opacity", 1.0);
+            }
         });
     </script>
     <script>
@@ -188,8 +217,10 @@
         var False = false;
         function setAnswered(val) {
             if (val == null || val == undefined) val = global_answer;
-               /* if still null or undefined, don't set or spoil the existing answer */
+            /* if still null or undefined, don't set or spoil the existing answer */
             if (val == null || val == undefined) return;
+            /* if slider handle is transparent (not touched), treat it as unanswered */
+            if ($('.slider-handle').css("opacity") == 0.0) return;
             document.cookie = 'answered_@(ViewBag.QuestionNumber)=' + val;
             //alert(val);
             //alert(document.cookie);

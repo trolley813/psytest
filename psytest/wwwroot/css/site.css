@@ -111,6 +111,25 @@ body {
     transform: translateX(-50%) translateY(-50%);
 }
 
+.centered-buttons {
+    position: absolute;
+    left: 50%;
+    width: 60%;
+    -moz-transform: translateX(-16.5%) translateY(-16.5%);
+    -webkit-transform: translateX(-16.5%) translateY(-16.5%);
+    transform: translateX(-16.5%) translateY(-16.5%);
+}
+
+.centered-button-submit {
+    position: absolute;
+    left: 55%;
+    top: 60%;
+    width: 60%;
+    -moz-transform: translateX(-16.5%) translateY(-16.5%);
+    -webkit-transform: translateX(-16.5%) translateY(-16.5%);
+    transform: translateX(-16.5%) translateY(-16.5%);
+}
+
 .centered-header {
     align-content: center;
 }
@@ -145,10 +164,9 @@ body {
 }
 
 .question-variants {
-    -moz-transform: translateX(96%);
-    -webkit-transform: translateX(96%);
-    transform: translateX(96%);
-    margin-top: 15px;   
+    margin-top: 13px;
+    width: 80%;
+    left: 10%;
 }
 
 .btn-margin {
