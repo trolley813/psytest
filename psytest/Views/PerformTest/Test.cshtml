@@ -13,6 +13,7 @@
     ViewData["Next"] = Localizer["Next"];
     ViewData["Submit"] = Localizer["Submit"];
     ViewData["QuestionFormat"] = Localizer["QuestionFormat"];
+    ViewData["Questions"] = Localizer["Questions"];
 }
 
 @if (ViewBag.ShouldClearCookies)
@@ -152,27 +153,30 @@
 
 <hr style="height:30pt; visibility:hidden;" />
 
-<form>
-    @for (int i = 1; i <= ViewBag.QuestionsCount; i++)
-    {
-        bool answered = ((ViewBag.Cookies?[$"answered_{i}"] ?? "") != "");
-        String buttonClass = answered ? "btn btn-success btn-margin" : "btn btn-primary btn-margin";
-        @if (i == ViewBag.QuestionNumber)
+<a class="btn btn-info" href="#questions-list" data-toggle="collapse">@(ViewData["Questions"])</a>
+<div id="questions-list">
+    <form>
+        @for (int i = 1; i <= ViewBag.QuestionsCount; i++)
         {
-            buttonClass += " btn-outline";
-        }
-        if (answered)
-        {
-            <label class="checkbox-inline"><input type="checkbox" value="" disabled="disabled" checked>@(i)</label>
+            bool answered = ((ViewBag.Cookies?[$"answered_{i}"] ?? "") != "");
+            String buttonClass = answered ? "btn btn-success btn-margin" : "btn btn-primary btn-margin";
+            @if (i == ViewBag.QuestionNumber)
+            {
+                buttonClass += " btn-outline";
+            }
+            if (answered)
+            {
+                <label class="checkbox-inline"><input type="checkbox" value="" disabled="disabled" checked>@(i)</label>
 
-        }
-        else
-        {
-            <label class="checkbox-inline"><input type="checkbox" value="" disabled="disabled">@(i)</label>
+            }
+            else
+            {
+                <label class="checkbox-inline"><input type="checkbox" value="" disabled="disabled">@(i)</label>
 
+            }
         }
-    }
-</form>
+    </form>
+</div>
 
 @section Scripts {
     <script type="text/javascript">
