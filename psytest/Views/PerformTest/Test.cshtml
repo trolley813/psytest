@@ -26,7 +26,7 @@
     </script>
 }
 
-<h2>@(String.Format((ViewData["QuestionFormat"] as LocalizedHtmlString).Value, ViewBag.QuestionNumber, ViewBag.QuestionsCount))</h2>
+<h4>@(String.Format((ViewData["QuestionFormat"] as LocalizedHtmlString).Value, ViewBag.QuestionNumber, ViewBag.QuestionsCount))</h4>
 
 <div class="instruction-text">
     @(ViewBag.Instruction)
@@ -153,10 +153,10 @@
 
 <hr style="height:30pt; visibility:hidden;" />
 
-<a class="btn btn-info" href="#questions-list" data-toggle="collapse">@(ViewData["Questions"])</a>
 <div id="questions-list">
+    <!-- Display only the current part -->
     <form>
-        @for (int i = 1; i <= ViewBag.QuestionsCount; i++)
+        @for (int i = ViewBag.MinQuestionNumber; i <= ViewBag.MaxQuestionNumber; i++)
         {
             bool answered = ((ViewBag.Cookies?[$"answered_{i}"] ?? "") != "");
             String buttonClass = answered ? "btn btn-success btn-margin" : "btn btn-primary btn-margin";
@@ -166,12 +166,12 @@
             }
             if (answered)
             {
-                <label class="checkbox-inline"><input type="checkbox" value="" disabled="disabled" checked>@(i)</label>
+               <a class="@(buttonClass)" href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(i)"> </a>
 
             }
             else
             {
-                <label class="checkbox-inline"><input type="checkbox" value="" disabled="disabled">@(i)</label>
+               <a class="@(buttonClass)" href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(i)"> </a>
 
             }
         }

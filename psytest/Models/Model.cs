@@ -30,6 +30,9 @@ namespace psytest.Models
                 v => JsonConvert.DeserializeObject<Dictionary<String, String>>(v)
             );
 
+            builder.Entity<Question>().Property(q => q.Number).HasDefaultValue(0);
+            builder.Entity<Question>().Property(q => q.Part).HasDefaultValue(1);
+
             base.OnModelCreating(builder);
         }
     }

@@ -41,7 +41,7 @@ namespace psytest.Controllers
                 return NotFound($"Test with id {testID} has only "
                 + $"{questionsCount} questions, {questionNumber} is out of range");
             }
-            Question question = test.Questions[questionNumber - 1];
+            Question question = test.Questions.OrderBy(q => q.Number).ToArray()[questionNumber - 1];
             ViewBag.TestID = testID;
             ViewBag.Instruction = test.Instruction;
             ViewBag.QuestionNumber = questionNumber;
@@ -49,6 +49,8 @@ namespace psytest.Controllers
             ViewBag.Question = question;
             ViewBag.QuestionType = question.Type;
             ViewBag.Cookies = Request.Cookies;
+            ViewBag.MinQuestionNumber = test.Questions.Where(q => q.Part == question.Part).Select(q => q.Number).Min();
+            ViewBag.MaxQuestionNumber = test.Questions.Where(q => q.Part == question.Part).Select(q => q.Number).Max();
             ViewBag.ShouldClearCookies = clearCookies ?? false;
             return View();
         }

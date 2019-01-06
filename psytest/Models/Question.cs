@@ -8,6 +8,10 @@ namespace psytest.Models
     {
         public int Id { get; set; }
         [Required]
+        public int Number { get; set; }
+        [Required]
+        public int Part { get; set; }
+        [Required]
         public QuestionType Type { get; set; }
         [Required]
         public String Text { get; set; }
