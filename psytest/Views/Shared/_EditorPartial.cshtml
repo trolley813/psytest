@@ -7,7 +7,7 @@
     @if (SignInManager.IsSignedIn(User) && User.IsInRole("Administrator"))
 {
     <li class="nav-item">
-        <a class="nav-link text-dark" asp-controller="TestCreation" asp-action="Create">Test Creation Wizard</a>
+        <a class="nav-link text-dark" asp-controller="TestCreation" asp-action="Index">Test Creation Wizard</a>
     </li>
 }
 </ul>
