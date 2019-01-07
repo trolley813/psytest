@@ -1,0 +1,15 @@
+﻿@{
+    ViewData["Title"] = "Checkout";
+}
+
+<h2>Test Creation</h2>
+
+<p>Welcome to the Test creation process</p>
+
+@using (Html.BeginForm())
+{
+@Html.AntiForgeryToken()
+
+<hr />
+<input type="submit" name="go" value="Start New" class="btn btn-primary" />
+}

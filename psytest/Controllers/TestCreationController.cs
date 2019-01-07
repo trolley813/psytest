@@ -48,13 +48,17 @@ namespace psytest.Controllers
                 return NotFound();
             }
 
+            ViewBag.TestName = testCreation.TestName;
+            ViewBag.TestInstruction = testCreation.TestInstruction;
+            ViewBag.PartCount = testCreation.PartCount;
+
             return View("Create1");
         }
 
         [WizardStep(1)]
         [ActionName("Create")]
         [HttpPost, ValidateAntiForgeryToken]
-        public IActionResult CreateStep1Post(Guid testCreationId, string go)
+        public IActionResult CreateStep1Post(Guid testCreationId, string go, string testName, string testInstruction, int partCount)
         {
             // potential check here, return view if failed, 
             if (!ModelState.IsValid)
@@ -68,6 +72,10 @@ namespace psytest.Controllers
             {
                 return NotFound();
             }
+
+            testCreation.TestName = testName;
+            testCreation.TestInstruction = testInstruction;
+            testCreation.PartCount = partCount;
 
             if (go == "Next")
             {
@@ -91,6 +99,8 @@ namespace psytest.Controllers
             {
                 return NotFound();
             }
+
+            ViewBag.PartCount = testCreation.PartCount;
 
             return View("Create2");
         }

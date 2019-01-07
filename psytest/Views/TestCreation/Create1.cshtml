@@ -1,0 +1,23 @@
+﻿@{
+    ViewData["Title"] = "Checkout";
+    ViewData["TestName"] = ViewBag.TestName ?? "";
+    ViewData["TestInstruction"] = ViewBag.TestInstruction ?? "";
+    ViewData["PartCount"] = ViewBag.PartCount ?? 1;
+}
+
+<h2>Step 1 of 4</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+
+    <label for="testName">Test name: </label>
+    <input id="testName " type="text" name="testName" placeholder="Enter test name here" required /> <br>
+    <label for="testInstruction">Instruction for test: </label>
+    <textarea id="testInstruction" name="testInstruction" rows="10" cols="50" placeholder="Write instructions here" required></textarea> <br />
+    <label for="partCount">Number of parts: </label>
+    <input id="partCount" type="number" name="partCount" min="1" max="10" value="1" /> <br>
+    <hr />
+    <input type="submit" name="go" value="Next" class="btn btn-primary" />
+}

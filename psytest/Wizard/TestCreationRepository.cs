@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace psytest.Wizard
 {
-    public class TestCreationRepository
+    public class TestCreationRepository : ITestCreationRepository
     {
         private Dictionary<string, TestCreation> testCreations;
 

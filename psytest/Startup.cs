@@ -18,6 +18,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using psytest.Models;
 using psytest.Areas.Identity.Data;
+using psytest.Wizard;
 
 namespace psytest
 {
@@ -39,6 +40,10 @@ namespace psytest
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
+
+            services.AddSingleton<ITestCreationRepository, TestCreationRepository>();
+
+            services.AddSingleton<IWizardStepProvider, TestWizardStepProvider>();
 
             services.AddLocalization(options => options.ResourcesPath = "Resources");
 
