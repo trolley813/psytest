@@ -58,7 +58,9 @@ namespace psytest.Controllers
         [WizardStep(1)]
         [ActionName("Create")]
         [HttpPost, ValidateAntiForgeryToken]
-        public IActionResult CreateStep1Post(Guid testCreationId, string go, string testName, string testInstruction, int partCount)
+        public IActionResult CreateStep1Post(Guid testCreationId, string go, 
+            string testName, string testInstruction, 
+            int partCount, int metricCount)
         {
             // potential check here, return view if failed, 
             if (!ModelState.IsValid)
@@ -76,6 +78,7 @@ namespace psytest.Controllers
             testCreation.TestName = testName;
             testCreation.TestInstruction = testInstruction;
             testCreation.PartCount = partCount;
+            testCreation.MetricCount = metricCount;
 
             if (go == "Next")
             {
@@ -101,6 +104,7 @@ namespace psytest.Controllers
             }
 
             ViewBag.PartCount = testCreation.PartCount;
+            ViewBag.CountByPart = testCreation.CountByPart;
 
             return View("Create2");
         }
@@ -122,6 +126,10 @@ namespace psytest.Controllers
             {
                 return NotFound();
             }
+
+            testCreation.CountByPart = Enumerable.Range(1, testCreation.PartCount)
+                .Select(i => Convert.ToInt32(Request.Form[$"questionCount{i}"].ToString()))
+                .ToList();
 
             if (go == "Next")
             {
@@ -146,6 +154,9 @@ namespace psytest.Controllers
                 return NotFound();
             }
 
+            ViewBag.QuestionTexts = testCreation.QuestionTexts;
+            ViewBag.QuestionCount = testCreation.QuestionCount;
+
             return View("Create3");
         }
 
@@ -166,6 +177,10 @@ namespace psytest.Controllers
             {
                 return NotFound();
             }
+
+            testCreation.QuestionTexts = Enumerable.Range(1, testCreation.PartCount)
+                .Select(i => Request.Form[$"questionCount{i}"].ToString())
+                .ToList();
 
             if (go == "Next")
             {
@@ -190,6 +205,8 @@ namespace psytest.Controllers
                 return NotFound();
             }
 
+            ViewBag.MetricCount = testCreation.MetricCount;
+
             return View("Create4");
         }
 
@@ -211,6 +228,16 @@ namespace psytest.Controllers
                 return NotFound();
             }
 
+            // TODO: JS validation
+            testCreation.Metrics = Enumerable.Range(1, testCreation.PartCount)
+                .Select(i => new Metric {
+                    Name = Request.Form[$"name{i}"].ToString(),
+                    DirectQuestions = Request.Form[$"directQuestions{i}"].ToString().AsRangesList(),
+                    InverseQuestions = Request.Form[$"inverseQuestions{i}"].ToString().AsRangesList(),
+                    AdditionalComputeExpression = Request.Form[$"expr{i}"].ToString()
+                })
+                .ToList();
+
             if (go == "Finish")
             {
                 testCreationRepository.MoveNext(testCreation);
@@ -223,6 +250,30 @@ namespace psytest.Controllers
             }
 
             
+        }
+       
+    }
+
+    static class StringRangeExtension
+    {
+        // Helper method for converting an enumerating string (e.g. 1-3,5,8-13) to list
+        public static List<int> AsRangesList(this string s)
+        {
+            return s.Split(",").Select(x => {
+                var r = x.Split("-");
+                switch (r.Length)
+                {
+                    case 1:
+                        Int32.TryParse(r[0], out int y0);
+                        return Enumerable.Range(y0, 1);
+                    case 2:
+                        Int32.TryParse(r[0], out int y1);
+                        Int32.TryParse(r[1], out int y2);
+                        return Enumerable.Range(y1, y2 - y1 + 1);
+                    default:
+                        throw new Exception("Incorrect expression");
+                }
+            }).Aggregate((res, next) => res.Concat(next)).ToList();
         }
     }
 }

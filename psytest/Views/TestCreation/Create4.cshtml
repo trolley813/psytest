@@ -1,14 +1,27 @@
 ﻿@{
     ViewData["Title"] = "Checkout";
+    int mCount = ViewBag.MetricCount;
 }
 
 <h2>Step 4 of 4</h2>
 
 @using (Html.BeginForm())
 {
-@Html.AntiForgeryToken()
-
-<hr />
-<input type="submit" name="Go" value="Previous" class="btn btn-default" />
-<input type="submit" name="Go" value="Finish" class="btn btn-primary" />
+    @Html.AntiForgeryToken()
+    @for (int i = 1; i <= mCount; i++)
+    {
+        <h4>Metric #@(i)</h4>
+        <label for="name@(i)">Metric name: </label>
+        <input id="name@(i)" type="text" name="name@(i)" placeholder="Write text here" /> <br>
+        <label for="directQuestions@(i)">Direct questions: </label>
+        <input id="directQuestions@(i)" type="text" name="directQuestions@(i)" placeholder="Write numbers of questions here, e.g. 1,3,5-8,13-16" /> <br>
+        <label for="inverseQuestions@(i)">Inverse questions: </label>
+        <input id="inverseQuestions@(i)" type="text" name="inverseQuestions@(i)" placeholder="Write numbers of questions here, e.g. 1,3,5-8,13-16" /> <br>
+        <label for="expr@(i)">Post-transformation expression: </label>
+        <input id="expr@(i)" type="text" name="expr@(i)" placeholder="Write an expression using X for sum, e.g. X * 2 + 5" /> <br>
+        <hr />
+    }
+    <hr />
+    <input type="submit" name="Go" value="Previous" class="btn btn-default" />
+    <input type="submit" name="Go" value="Finish" class="btn btn-primary" />
 }

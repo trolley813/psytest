@@ -13,9 +13,27 @@
     @for (int i = 1; i <= pCount; i++)
     {
         <label for="questionCount@(i)">Number of questions in part #@(i): </label>
-        <input id="questionCount@(i)" type="number" name="questionCount@(i)" min="1" max="100" value="1" /> <br>
+        <input id="questionCount@(i)" type="number" name="questionCount@(i)" min="1" max="100" value="1" oninput="update();" /> <br>
     }
+    <hr />
+    <div id="totalQuestions"></div>
     <hr />
     <input type="submit" name="Go" value="Previous" class="btn btn-default" />
     <input type="submit" name="Go" value="Next" class="btn btn-primary" />
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            update();
+        });
+
+        function update() {
+            var total = 0;
+            for (var i = 1; i <= @(pCount); i++) {
+                total += parseInt($('#questionCount' + i).val());
+            }
+            $("#totalQuestions").text("Total questions: " + total);
+        }
+    </script>
 }
