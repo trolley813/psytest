@@ -12,7 +12,7 @@
     @for (int i = 1; i <= qCount; i++)
     {
         <label for="questionText@(i)">Text for question #@(i): </label>
-        <textarea id="questionText@(i)" name="questionText@(i)" rows="3" cols="90" placeholder="Write text here">@((ViewBag.QuestionTexts as List<string>)?.ElementAtOrDefault(i - 1) ?? "")</textarea> <br>
+        <textarea id="questionText@(i)" name="questionText@(i)" rows="3" cols="90" placeholder="Write text here" required>@((ViewBag.QuestionTexts as List<string>)?.ElementAtOrDefault(i - 1) ?? "")</textarea> <br>
     }
     <hr />
     <input type="submit" name="Go" value="Previous" class="btn btn-default" />

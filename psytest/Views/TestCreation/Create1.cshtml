@@ -11,15 +11,34 @@
 {
     @Html.AntiForgeryToken()
 
-
-    <label for="testName">Test name: </label>
-    <input id="testName " type="text" name="testName" placeholder="Enter test name here" required /> <br>
-    <label for="testInstruction">Instruction for test: </label>
-    <textarea id="testInstruction" name="testInstruction" rows="10" cols="50" placeholder="Write instructions here" required></textarea> <br />
-    <label for="partCount">Number of parts: </label>
-    <input id="partCount" type="number" name="partCount" min="1" max="10" value="1" /> <br>
-    <label for="metricCount">Number of metrics: </label>
-    <input id="metricCount" type="number" name="metricCount" min="1" max="20" value="1" /> <br>
+    <table>
+        <tr>
+            <td><label for="testName">Test name: </label></td>
+            <td><input id="testName " type="text" name="testName" placeholder="Enter test name here" required /></td>
+        </tr>
+        <tr>
+            <td><label for="testInstruction">Instruction for test: </label></td>
+            <td><textarea id="testInstruction" name="testInstruction" rows="10" cols="50" placeholder="Write instructions here" required></textarea></td>
+        </tr>
+        <tr>
+            <td><label for="partCount">Number of parts: </label></td>
+            <td><input id="partCount" type="number" name="partCount" min="1" max="10" value="1" /></td>
+        </tr>
+        <tr>
+            <td><label for="metricCount">Number of metrics: </label></td>
+            <td><input id="metricCount" type="number" name="metricCount" min="1" max="20" value="1" /> </td>
+        </tr>
+        <tr>
+            <td><label for="questionType">Question type: </label></td>
+            <td>
+                <select id="questionType" name="questionType">
+                    <option value="slider">Simple slider</option>
+                    <option value="antagonistic">Slider between 2 contrasting sentences</option>
+                    <option value="variants">Variants</option>
+                </select>
+            </td>
+        </tr>
+    </table>
     <hr />
     <input type="submit" name="go" value="Next" class="btn btn-primary" />
 }
