@@ -29,16 +29,71 @@
             <td><input id="metricCount" type="number" name="metricCount" min="1" max="20" value="1" /> </td>
         </tr>
         <tr>
-            <td><label for="questionType">Question type: </label></td>
+            <td rowspan="3"><label for="questionType">Question type: </label></td>
             <td>
-                <select id="questionType" name="questionType">
-                    <option value="slider">Simple slider</option>
-                    <option value="antagonistic">Slider between 2 contrasting sentences</option>
-                    <option value="variants">Variants</option>
-                </select>
+                <input type="radio" id="qType1" name="questionType" value="slider" onclick="qType1Selected();" required/>
+                <label for="qType1">Simple slider</label>
+            </td>
+            <td>
+                <input type="radio" id="qType2" name="questionType" value="antagonistic" onclick="qType2Selected();" required/>
+                <label for="qType2">Slider between 2 contrasting sentences</label>
+            </td>
+            <td>
+                <input type="radio" id="qType3" name="questionType" value="variant" onclick="qType3Selected();" required/>
+                <label for="qType3">Variants</label>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="sliderMin">Min</label>
+                <input id="sliderMin" type="number" name="sliderMin" min="-20" max="20" value="0" />               
+            </td>
+            <td>
+                <label for="antaMin">Min</label>
+                <input id="antaMin" type="number" name="sliderMin" min="-20" max="20" value="0" />
+            </td>           
+            <td rowspan="2">
+                <textarea id="variants" name="variants" rows="5" cols="30" placeholder="Write variants here, 1 per line"></textarea>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="sliderMax">Max</label>
+                <input id="sliderMax" type="number" name="sliderMin" min="-20" max="20" value="0" />
+            </td>
+            <td>
+                <label for="antaMax">Max</label>
+                <input id="antaMax" type="number" name="sliderMin" min="-20" max="20" value="0" />
             </td>
         </tr>
     </table>
     <hr />
     <input type="submit" name="go" value="Next" class="btn btn-primary" />
+}
+
+@section Scripts
+{
+    <script type="text/javascript">
+        function qType1Selected() {
+            $("#sliderMin").prop('disabled', false);
+            $("#sliderMax").prop('disabled', false);
+            $("#antaMin").prop('disabled', true);
+            $("#antaMax").prop('disabled', true);
+            $("#variants").prop('disabled', true);
+        }
+        function qType2Selected() {
+            $("#sliderMin").prop('disabled', true);
+            $("#sliderMax").prop('disabled', true);
+            $("#antaMin").prop('disabled', false);
+            $("#antaMax").prop('disabled', false);
+            $("#variants").prop('disabled', true);
+        }
+        function qType3Selected() {
+            $("#sliderMin").prop('disabled', true);
+            $("#sliderMax").prop('disabled', true);
+            $("#antaMin").prop('disabled', true);
+            $("#antaMax").prop('disabled', true);
+            $("#variants").prop('disabled', false);
+        }
+    </script>
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using psytest.Models;
 using psytest.Wizard;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -11,10 +12,14 @@ namespace psytest.Controllers
 {
     public class TestCreationController : Controller
     {
+        private readonly TestContext _context;
         private readonly ITestCreationRepository testCreationRepository;
 
-        public TestCreationController(ITestCreationRepository testCreationRepository) => 
+        public TestCreationController(TestContext context, ITestCreationRepository testCreationRepository)
+        {
             this.testCreationRepository = testCreationRepository;
+            _context = context;
+        }
 
 
         // GET: /<controller>/
@@ -60,7 +65,8 @@ namespace psytest.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public IActionResult CreateStep1Post(Guid testCreationId, string go, 
             string testName, string testInstruction, 
-            int partCount, int metricCount)
+            int partCount, int metricCount,
+            string questionType)
         {
             // potential check here, return view if failed, 
             if (!ModelState.IsValid)
@@ -79,6 +85,25 @@ namespace psytest.Controllers
             testCreation.TestInstruction = testInstruction;
             testCreation.PartCount = partCount;
             testCreation.MetricCount = metricCount;
+
+            var qType = new QuestionTypeProxy { Type = questionType }; ;
+            
+            switch(questionType)
+            {
+                case "slider":
+                    qType.MinValue = Convert.ToInt32(Request.Form["sliderMin"].ToString());
+                    qType.MaxValue = Convert.ToInt32(Request.Form["sliderMax"].ToString());
+                    break;
+                case "antagonistic":
+                    qType.MinValue = Convert.ToInt32(Request.Form["antaMin"].ToString());
+                    qType.MaxValue = Convert.ToInt32(Request.Form["antaMax"].ToString());
+                    break;
+                case "variant":
+                    qType.Variants = Request.Form["variants"].ToString();
+                    break;
+            }
+
+            testCreation.QuestionType = qType;
 
             if (go == "Next")
             {
@@ -241,7 +266,7 @@ namespace psytest.Controllers
             if (go == "Finish")
             {
                 testCreationRepository.MoveNext(testCreation);
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("CreateTest", new { testCreationId });
             }
             else
             {
@@ -251,7 +276,32 @@ namespace psytest.Controllers
 
             
         }
-       
+
+        public IActionResult CreateTest(Guid testCreationId)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var testCreation = testCreationRepository.FindByIdForUser(testCreationId, User.Identity.Name);
+
+            if (testCreation == null)
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                TestGenerator.GenerateTest(testCreation, _context);
+                return View();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
     }
 
     static class StringRangeExtension
