@@ -111,11 +111,11 @@
         @(ViewBag.Question.Text)
     </div>
     var variant = ViewBag.QuestionType as VariantQuestionType;
-    <div class="btn-group btn-group-justified btn-margin question-variants" data-toggle="buttons">
+    <div id="vars" class="btn-group btn-group-justified btn-margin question-variants" data-toggle="buttons">
         @for (int i = 0; i < variant.Variants.Count; i++)
         {
             <label class="btn btn-primary">
-                <input type="radio" name="options" id="option@(i+1)" onchange="global_answer=@(i+1);" @((ViewBag.Cookies?[$"answered_{i}"] ?? "") == $"{i}" ? "checked" : "unchecked")> @(variant.Variants[i])
+                <input type="radio" name="options" id="option@(i+1)" onchange="global_answer=@(i+1);"> @(variant.Variants[i])
             </label>
         }
     </div>
@@ -166,12 +166,12 @@
             }
             if (answered)
             {
-               <a class="@(buttonClass)" href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(i)"> </a>
+                <a class="@(buttonClass)" href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(i)"> </a>
 
             }
             else
             {
-               <a class="@(buttonClass)" href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(i)"> </a>
+                <a class="@(buttonClass)" href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(i)"> </a>
 
             }
         }
@@ -190,7 +190,18 @@
                 $('.slider-handle').css("opacity", 1.0);
                 });
             if (getCookie("answered_" + @(ViewBag.QuestionNumber)) != undefined) {
-                $('.slider-handle').css("opacity", 1.0);
+                if ($('#value-slider').length) {
+                    // for slider
+                    $('.slider-handle').css("opacity", 1.0);
+                } else {
+                    // for non-slider
+                    var v = parseInt(getCookie("answered_" + @(ViewBag.QuestionNumber)));
+                    var r = $("input:radio[name=options]")[v - 1];
+                    $(r).addClass("active");
+                    $(r).prop('checked', true);
+                    // we should reload the whole div
+                   $("#vars").load(location.href + " #vars>*", "");
+                }
             }
         });
     </script>
@@ -248,7 +259,13 @@
         function submitAnswers(lastQuestionRemaining) {
             if (lastQuestionRemaining)
             {
-                setAnswered($('#value-slider').slider('getValue'));
+                if ($('#value-slider').length) {
+                    // for slider
+                    setAnswered($('#value-slider').slider('getValue'));
+                } else {
+                    // for non-slider
+                    setAnswered(null);
+                }
             }
             var answers = prepareAnswersForSubmit();
             $.redirectPost("/PerformTest/Submit", answers);

@@ -203,8 +203,8 @@ namespace psytest.Controllers
                 return NotFound();
             }
 
-            testCreation.QuestionTexts = Enumerable.Range(1, testCreation.PartCount)
-                .Select(i => Request.Form[$"questionCount{i}"].ToString())
+            testCreation.QuestionTexts = Enumerable.Range(1, testCreation.QuestionCount)
+                .Select(i => Request.Form[$"questionText{i}"].ToString())
                 .ToList();
 
             if (go == "Next")
@@ -291,15 +291,15 @@ namespace psytest.Controllers
                 return NotFound();
             }
 
-            try
-            {
+            //try
+            //{
                 TestGenerator.GenerateTest(testCreation, _context);
                 return View();
-            }
-            catch (Exception e)
-            {
-                return BadRequest(e.Message);
-            }
+            //}
+            //catch (Exception e)
+            //{
+            //    return BadRequest(e.Message);
+            //}
         }
 
     }

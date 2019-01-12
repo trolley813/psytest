@@ -91,19 +91,24 @@ namespace psytest.Wizard
                     qTypeSubtrahend = vqt.Variants.Count + 1;
                     break;
             }
-            Test test = new Test { Name = testCreation.TestName, Instruction = testCreation.TestInstruction };
+            Test test = new Test
+            {
+                Name = testCreation.TestName,
+                Instruction = testCreation.TestInstruction,
+                Questions = new List<Question>()
+            };
             int count = testCreation.QuestionCount;
-            List<Question> questions = new List<Question>();
             for (int i = 0; i < count; i++)
             {
-                Question q = new Question {
+                Question q = new Question
+                {
                     Test = test,
                     Number = i + 1,
                     Type = questionType,
                     Part = testCreation.QuestionParts[i],
                     Text = testCreation.QuestionTexts[i]
                 };
-                questions.Append(q);
+                test.Questions.Add(q);
             }
             string metricScript = "";
             Dictionary<string, string> metricsDescriptions = new Dictionary<string, string>();
@@ -115,22 +120,22 @@ namespace psytest.Wizard
                 {
                     metricScript += $" + questions[{q}]";
                 }
-                foreach (var q in testCreation.Metrics[i].DirectQuestions)
+                foreach (var q in testCreation.Metrics[i].InverseQuestions)
                 {
                     metricScript += $" + {qTypeSubtrahend} - questions[{q}]";
                 }
                 var trans = testCreation.Metrics[i].AdditionalComputeExpression;
-                if (trans == "") trans = "X"; 
+                if (trans == "") trans = "X";
                 metricScript += $";\n" +
                     $"metrics[\"m{i + 1}\"] = {trans};\n";
             }
             test.MetricsDescriptions = metricsDescriptions;
             test.MetricsComputeScript = metricScript;
-            test.Questions = questions;
 
             testContext.Add(questionType);
             testContext.Add(test);
-            foreach(var q in questions) testContext.Add(q);
+
+            testContext.SaveChanges();
         }
     }
 }
