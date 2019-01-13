@@ -254,7 +254,7 @@ namespace psytest.Controllers
             }
 
             // TODO: JS validation
-            testCreation.Metrics = Enumerable.Range(1, testCreation.PartCount)
+            testCreation.Metrics = Enumerable.Range(1, testCreation.MetricCount)
                 .Select(i => new Metric {
                     Name = Request.Form[$"name{i}"].ToString(),
                     DirectQuestions = Request.Form[$"directQuestions{i}"].ToString().AsRangesList(),

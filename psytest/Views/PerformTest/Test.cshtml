@@ -40,12 +40,24 @@
     var slider = ViewBag.QuestionType as SliderQuestionType;
     int val = slider.MinValue;
     Int32.TryParse(ViewBag.Cookies?[$"answered_{ViewBag.QuestionNumber}"] ?? "", out val);
-    <p>
-        <input id="value-slider" data-slider-id="value-slider-id" type="text" class="span2"
-               data-slider-min="@(slider.MinValue)"
-               data-slider-max="@(slider.MaxValue)"
-               data-slider-step="1" data-slider-value="@(val)" />
-    </p>
+    int[] allVariants = Enumerable.Range(slider.MinValue, slider.MaxValue - slider.MinValue + 1).ToArray();
+    String sliderTicks = "[" + String.Join(", ", allVariants.Select(v => $"{v}")) + "]";
+    String quote = "\"";
+    String sliderTicksLabels = "[" + String.Join(", ", allVariants.Select(v => $"{quote}{Math.Abs(v)}{quote}")) + "]";
+    <table style="margin-left:auto; margin-right:auto; width:80%; max-width:80%; word-wrap:break-word; align-content:center;">
+        <tr>
+            <td style="width:100%; max-width:100%;">
+                <p class="anta-slider">
+                    <input id="value-slider" data-slider-id="value-slider-id" type="text" class="span2"
+                           data-slider-min="@(slider.MinValue)"
+                           data-slider-max="@(slider.MaxValue)"
+                           data-slider-ticks="@(sliderTicks)"
+                           data-slider-ticks-labels="@(sliderTicksLabels)"
+                           data-slider-step="1" data-slider-value="@(val)" />
+                </p>
+            </td>
+        </tr>
+    </table>
     <div class="centered-buttons">
         <a href="/PerformTest/Test?testID=@(ViewBag.TestID)&questionNumber=@(ViewBag.QuestionNumber - 1)"
            onclick="setAnswered($('#value-slider').slider('getValue'));" class="@(prevClass)">@(ViewData["Prev"])</a>
