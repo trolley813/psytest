@@ -1,0 +1,27 @@
+﻿@{
+    ViewData["Title"] = "Results";
+}
+
+<h2>Test Results</h2>
+<a href="/Results/Stats" class="btn btn-primary btn-large">Show stats</a>
+
+<table>
+    <tr>
+        <th style="padding: 15px">Name</th>
+        <th style="padding: 15px">Born</th>
+        <th style="padding: 15px">Tested</th>
+        <th style="padding: 15px">Age</th>
+        <th style="padding: 15px">Results</th>
+    </tr>
+    @foreach(dynamic r in ViewBag.Results)
+    {
+        var age = r["UserAge"] as (int, int)? ?? (0, 0);
+    <tr>
+        <td style="padding: 15px">@(r["UserName"])</td>
+        <td style="padding: 15px">@(r["UserDOB"])</td>
+        <td style="padding: 15px">@(r["TestingDate"])</td>
+        <td style="padding: 15px">@($"{age.Item1} years, {age.Item2} days")</td>
+        <td style="padding: 15px">@(String.Join(", ", (r["Metrics"] as Dictionary<String, Object>).Select(m => $"{m.Key}={m.Value}").ToArray()))</td>
+    </tr>
+    }
+</table>

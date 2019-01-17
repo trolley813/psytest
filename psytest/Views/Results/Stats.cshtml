@@ -1,0 +1,23 @@
+﻿@{
+    ViewData["Title"] = "Stats";
+}
+
+<h2>Test Results</h2>
+
+<table>
+    <tr>
+        <th style="padding: 15px">Test Name</th>
+        <th style="padding: 15px">Averages</th>
+        <th style="padding: 15px">Std Devs</th>
+    </tr>
+    @foreach(dynamic s in ViewBag.Statistics)
+    {
+        var a1 = (s.Value.Item1 as Dictionary<String, Double>)?.Select(st => $"{st.Key} = {st.Value}");
+        var a2 = (s.Value.Item2 as Dictionary<String, Double>)?.Select(st => $"{st.Key} = {st.Value}");
+    <tr>
+        <td style="padding: 15px">@(s.Key)</td>
+        <td style="padding: 15px; white-space:pre-line">@(String.Join("\n", a1 ?? new String[]{ "no data" }))</td>
+        <td style="padding: 15px; white-space:pre-line">@(String.Join("\n", a2 ?? new String[]{ "no data" }))</td>
+    </tr>
+    }
+</table>

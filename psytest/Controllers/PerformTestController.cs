@@ -6,22 +6,31 @@ using psytest.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Identity;
+using psytest.Areas.Identity.Data;
 
 namespace psytest.Controllers
 {
     [Authorize(Roles = "Administrator, User")]
     public class PerformTestController : Controller
     {
-        private readonly TestContext _context;
+        private readonly TestContext testContext;
+        private readonly TestResultContext resultContext;
+        private readonly UserContext userContext;
+        private UserManager<TestingUser> userManager;
 
-        public PerformTestController(TestContext context)
+        public PerformTestController(TestContext testContext, TestResultContext resultContext, 
+            UserContext userContext, UserManager<TestingUser> userManager)
         {
-            _context = context;
+            this.testContext = testContext;
+            this.resultContext = resultContext;
+            this.userContext = userContext;
+            this.userManager = userManager;
         }
 
         public IActionResult Test(int testID, int questionNumber, bool? clearCookies)
         {
-            // DON'T WORK
+            // DOESN'T WORK
             // if (clearCookies)
             // {
             //     foreach (var cookie in Request.Cookies.Keys)
@@ -30,7 +39,7 @@ namespace psytest.Controllers
             //     }
             // }
             Console.WriteLine($"Test ID = {testID}, Question No. {questionNumber}");
-            Test test = _context.Tests.Include(t => t.Questions).ThenInclude(q => q.Type).FirstOrDefault(m => m.Id == testID);
+            Test test = testContext.Tests.Include(t => t.Questions).ThenInclude(q => q.Type).FirstOrDefault(m => m.Id == testID);
             if (test == null)
             {
                 return NotFound($"Test with id {testID} Not found");
@@ -63,7 +72,7 @@ namespace psytest.Controllers
             {
                 Console.WriteLine($"Answer {res.Key} = {res.Value}");
             }
-            Test test = _context.Tests.FirstOrDefault(m => m.Id == testID);
+            Test test = testContext.Tests.FirstOrDefault(m => m.Id == testID);
             if (test == null)
             {
                 return NotFound($"Test with id {testID} Not found");
@@ -73,10 +82,24 @@ namespace psytest.Controllers
                 .SetValue("metrics", new Dictionary<String, Object>())
                 .Execute(test.MetricsComputeScript)
                 .GetValue("metrics");
+
+            
+            var testResult = new TestResult
+            {
+                UserId = userManager.GetUserId(User),
+                TestId = testID,
+                Metrics = metrics.ToObject() as Dictionary<String, Object>,
+                TestingDate = DateTime.Now
+            };
+
+            resultContext.Add(testResult);
+            resultContext.SaveChanges();
+
             ViewBag.Results = results;
             ViewBag.Metrics = metrics;
             ViewBag.MetricDescriptions = test.MetricsDescriptions;
             return View();
         }
+
     }
 }

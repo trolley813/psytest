@@ -291,15 +291,15 @@ namespace psytest.Controllers
                 return NotFound();
             }
 
-            //try
-            //{
+            try
+            {
                 TestGenerator.GenerateTest(testCreation, _context);
                 return View();
-            //}
-            //catch (Exception e)
-            //{
-            //    return BadRequest(e.Message);
-            //}
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
     }

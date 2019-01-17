@@ -11,6 +11,10 @@ namespace psytest.Models
         [Required]
         public String UserId { get; set; }
         [Required]
+        public int TestId { get; set; }
+        [Required]
         public Dictionary<String, Object> Metrics { get; set; }
+        [Required]
+        public DateTime TestingDate { get; set; }
     }
 }
