@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="BuildBundlerMinifier" Version="2.8.391" />
+    <PackageReference Include="DotNetCore.NPOI" Version="1.2.1" />
     <PackageReference Include="Jint" Version="2.11.58" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />

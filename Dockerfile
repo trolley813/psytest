@@ -1,6 +1,10 @@
 FROM microsoft/dotnet:2.2-sdk AS build
 WORKDIR /app
 
+# install libgdiplus for NPOI
+RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
+RUN apk --update add libgdiplus
+
 # copy csproj and restore as distinct layers
 COPY *.sln .
 COPY psytest/*.csproj ./psytest/
