@@ -1,24 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Razor;
-using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
-using psytest.Models;
 using psytest.Areas.Identity.Data;
+using psytest.Models;
 using psytest.Wizard;
+using System;
+using System.Globalization;
+using System.Threading.Tasks;
 
 namespace psytest
 {
@@ -52,11 +47,26 @@ namespace psytest
                 .AddDataAnnotationsLocalization()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
-            services.AddDbContext<TestContext>
-                (options => options.UseSqlite(Configuration.GetConnectionString("TestContextConnection")));
+            string database = Configuration.GetValue<String>("Database").ToLower();
 
-            services.AddDbContext<TestResultContext>
-                (options => options.UseSqlite(Configuration.GetConnectionString("TestResultContextConnection")));
+            switch (database)
+            {
+                case "sqlite":
+                    services.AddDbContext<TestContext>
+                        (options => options.UseSqlite(Configuration.GetConnectionString("TestContextConnection")));
+                    services.AddDbContext<TestResultContext>
+                        (options => options.UseSqlite(Configuration.GetConnectionString("TestResultContextConnection")));
+                    break;
+                case "postgres":
+                case "postgresql":
+                    services.AddDbContext<TestContext>
+                        (options => options.UseNpgsql(Configuration.GetConnectionString("TestContextConnection")));
+                    services.AddDbContext<TestResultContext>
+                        (options => options.UseNpgsql(Configuration.GetConnectionString("TestResultContextConnection")));
+                    break;
+            }
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
