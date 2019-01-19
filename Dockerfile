@@ -9,9 +9,9 @@ RUN dotnet restore
 COPY psytest/. ./psytest/
 WORKDIR /app/psytest
 RUN dotnet publish -c Release -o out
-COPY psytest/tests.sqlite3 /app/psytest/out
-COPY psytest/users.sqlite3 /app/psytest/out
-COPY psytest/results.sqlite3 /app/psytest/out
+#COPY psytest/tests.sqlite3 /app/psytest/out
+#COPY psytest/users.sqlite3 /app/psytest/out
+#COPY psytest/results.sqlite3 /app/psytest/out
 
 
 FROM microsoft/dotnet:2.2-aspnetcore-runtime-alpine AS runtime
