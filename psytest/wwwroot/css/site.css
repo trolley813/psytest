@@ -86,8 +86,8 @@ body {
 .question-text {
     font-size: 20px;
     text-align: center;
-    margin-top: 20px;
-    margin-bottom: 50px;
+    margin-top: 10px;
+    margin-bottom: 30px;
     white-space: pre;
     word-wrap: break-word;
 }
