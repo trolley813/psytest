@@ -309,6 +309,8 @@ namespace psytest.Controllers
         // Helper method for converting an enumerating string (e.g. 1-3,5,8-13) to list
         public static List<int> AsRangesList(this string s)
         {
+            if (s == "")
+                return new List<int>();
             return s.Split(",").Select(x => {
                 var r = x.Split("-");
                 switch (r.Length)
