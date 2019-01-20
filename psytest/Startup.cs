@@ -13,6 +13,7 @@ using psytest.Models;
 using psytest.Wizard;
 using System;
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace psytest
@@ -94,12 +95,17 @@ namespace psytest
                 new CultureInfo("ru-RU")
             };
 
-            app.UseRequestLocalization(new RequestLocalizationOptions
+            var options = new RequestLocalizationOptions
             {
                 DefaultRequestCulture = new RequestCulture("ru-RU"),
                 SupportedCultures = supportedCultures,
                 SupportedUICultures = supportedCultures
-            });
+            };
+
+            RequestCultureProvider requestProvider = options.RequestCultureProviders.OfType<CookieRequestCultureProvider>().First();
+            options.RequestCultureProviders.Remove(requestProvider);
+
+            app.UseRequestLocalization(options);
 
             app.UseMvc(routes =>
             {

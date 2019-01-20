@@ -78,7 +78,7 @@ body {
     text-align: justify;
     word-wrap: break-word;
     margin-top: 20px;
-    margin-bottom: 80px;
+    margin-bottom: 20px;
     white-space: pre-wrap;
 }
 
@@ -114,6 +114,7 @@ body {
 .centered-buttons {
     position: absolute;
     left: 50%;
+    top: 50%;
     width: 60%;
     -moz-transform: translateX(-16.5%) translateY(-16.5%);
     -webkit-transform: translateX(-16.5%) translateY(-16.5%);
