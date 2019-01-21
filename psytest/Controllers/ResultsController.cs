@@ -34,6 +34,7 @@ namespace psytest.Controllers
         public IActionResult Index()
         {
             var users = userManager.Users.Select(u => new { u.Id, User = u }).ToDictionary(u => u.Id, u => u.User);
+            var tests = testContext.Tests.Select(t => new { t.Id, t.Name, t.MetricsDescriptions }).ToDictionary(t => t.Id, t => new { t.Name, t.MetricsDescriptions });
             ViewBag.Results = resultContext.TestResults.Select(
                 t => new Dictionary<string, object>
                 {
@@ -41,7 +42,12 @@ namespace psytest.Controllers
                     { "UserDOB", users[t.UserId].DOB },
                     { "TestingDate", t.TestingDate },
                     { "UserAge", StatsHelper.GetAge(t.TestingDate, users[t.UserId].DOB) },
-                    { "Metrics", t.Metrics }
+                    { "Test", tests.GetValueOrDefault(t.TestId, new {Name = "(no data)", MetricsDescriptions = new Dictionary<String, String>()}).Name },
+                    { "Metrics", t.Metrics.Select(m => new {
+                        Key = tests.GetValueOrDefault(t.TestId, new {Name = "(no data)", MetricsDescriptions = new Dictionary<String, String>()})
+                              .MetricsDescriptions.GetValueOrDefault(m.Key, "(unknown metric)"),
+                        Value = m.Value
+                         }).ToDictionary(m => m.Key, m => m.Value) }
                 }).ToArray();
             return View();
         }
@@ -58,6 +64,7 @@ namespace psytest.Controllers
         public IActionResult ExcelExport()
         {
             var users = userManager.Users.Select(u => new { u.Id, User = u }).ToDictionary(u => u.Id, u => u.User);
+            var tests = testContext.Tests.Select(t => new { t.Id, t.Name, t.MetricsDescriptions }).ToDictionary(t => t.Id, t => new { t.Name, t.MetricsDescriptions });
             var results = resultContext.TestResults.Select(
                 t => new Dictionary<string, object>
                 {
@@ -65,7 +72,13 @@ namespace psytest.Controllers
                     { "UserDOB", users[t.UserId].DOB },
                     { "TestingDate", t.TestingDate },
                     { "UserAge", StatsHelper.GetAge(t.TestingDate, users[t.UserId].DOB) },
-                    { "Metrics", t.Metrics }
+                    { "TestID", t.TestId },
+                    { "Test", tests.GetValueOrDefault(t.TestId, new {Name = "(no data)", MetricsDescriptions = new Dictionary<String, String>()}).Name },
+                    { "Metrics", t.Metrics.Select(m => new {
+                        Key = tests.GetValueOrDefault(t.TestId, new {Name = "(no data)", MetricsDescriptions = new Dictionary<String, String>()})
+                              .MetricsDescriptions.GetValueOrDefault(m.Key, "(unknown metric)"),
+                        Value = m.Value
+                         }).ToDictionary(m => m.Key, m => m.Value) }
                 }).ToArray();
             string webRootFolder = hostingEnvironment.WebRootPath;
             string fileName = $"results_{DateTime.Now.ToString("yyyyMMdd_HHmmss_fff")}.xlsx";
@@ -76,24 +89,39 @@ namespace psytest.Controllers
             {
                 IWorkbook workbook;
                 workbook = new XSSFWorkbook();
-                ISheet excelSheet = workbook.CreateSheet("Demo");
+                Dictionary<int, ISheet> excelSheets = tests.Select(t => new { t.Key, Value = workbook.CreateSheet(t.Value.Name) })
+                    .ToDictionary(s => s.Key, s => s.Value);
                 IDataFormat dataFormatCustom = workbook.CreateDataFormat();
-                IRow row = excelSheet.CreateRow(0);
 
-                row.CreateCell(0).SetCellValue("User Name");
-                row.CreateCell(1).SetCellValue("User DOB");
-                row.CreateCell(2).SetCellValue("Testing Date");
-                row.CreateCell(3).SetCellValue("Age");
-                row.CreateCell(4).SetCellValue("Metrics");
+                foreach (var t in tests)
+                {
+                    IRow row = excelSheets[t.Key].CreateRow(0);
+                    row.CreateCell(0).SetCellValue("User Name");
+                    row.CreateCell(1).SetCellValue("User DOB");
+                    row.CreateCell(2).SetCellValue("Testing Date");
+                    row.CreateCell(3).SetCellValue("Age");
+                    int idx = 4;
+                    foreach (var m in t.Value.MetricsDescriptions)
+                    {
+                        row.CreateCell(idx++).SetCellValue(m.Value);
+                    }
+                }
+
+                Dictionary<int, int> rowCounts = tests.Keys.Select(k => new { Key = k, Value = 0 }).ToDictionary(rc => rc.Key, rc => rc.Value);
 
                 for (int i = 0; i < results.Count(); i++)
                 {
-                    row = excelSheet.CreateRow(i + 1);
+                    var testID = results[i]["TestID"] as int? ?? 0;
+                    var row = excelSheets[testID].CreateRow(++rowCounts[testID]);
                     row.CreateCell(0).SetCellValue((results[i]["UserName"] as String) ?? "[unknown user]");
                     row.CreateCell(1).SetCellValue((results[i]["UserDOB"] as DateTime?) ?? DateTime.MinValue);
                     row.CreateCell(2).SetCellValue((results[i]["TestingDate"] as DateTime?) ?? DateTime.MinValue);
                     row.CreateCell(3).SetCellValue(StatsHelper.AgeFormatForExcel((results[i]["UserAge"] as (int, int)?) ?? (0, 0)));
-                    row.CreateCell(4).SetCellValue(String.Join(", ", (results[i]["Metrics"] as Dictionary<string, object>).Select(x => $"{x.Key}={x.Value}")));
+                    int idx = 4;
+                    foreach(var metric in results[i]["Metrics"] as Dictionary<String, Object>)
+                    {
+                        row.CreateCell(idx++).SetCellValue(metric.Value as Double? ?? 0.0);
+                    }
 
                     row.GetCell(1).CellStyle.DataFormat = dataFormatCustom.GetFormat("yyyyMMdd HH:mm:ss");
                     row.GetCell(2).CellStyle.DataFormat = dataFormatCustom.GetFormat("yyyyMMdd HH:mm:ss");
