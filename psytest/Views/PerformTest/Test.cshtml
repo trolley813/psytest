@@ -44,7 +44,7 @@
     String sliderTicks = "[" + String.Join(", ", allVariants.Select(v => $"{v}")) + "]";
     String quote = "\"";
     String sliderTicksLabels = "[" + String.Join(", ", allVariants.Select(v => $"{quote}{Math.Abs(v)}{quote}")) + "]";
-    <table style="position:absolute; left:40%; top:38%; margin-left:auto; margin-right:auto; word-wrap:break-word; align-content:center;">
+    <table style="position:absolute; left:40%; top:43%; margin-left:auto; margin-right:auto; word-wrap:break-word; align-content:center;">
         <tr>
             <td style="width:100%; max-width:100%;">
                 <p class="anta-slider">
@@ -68,6 +68,7 @@
 
 @if (ViewBag.QuestionType is AntagonisticQuestionType)
 {
+    <hr style="height:30px">
     var slider = ViewBag.QuestionType as AntagonisticQuestionType;
     int val = slider.MinValue;
     Int32.TryParse(ViewBag.Cookies?[$"answered_{ViewBag.QuestionNumber}"] ?? "", out val);
