@@ -120,6 +120,9 @@
   <data name="ChooseTest" xml:space="preserve">
     <value>Choose a test</value>
   </data>
+  <data name="Hidden" xml:space="preserve">
+    <value> [Hidden]</value>
+  </data>
   <data name="StartTesting" xml:space="preserve">
     <value>Start testing</value>
   </data>

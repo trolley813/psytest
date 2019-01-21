@@ -50,7 +50,10 @@ namespace psytest.Controllers
         [Authorize(Roles = "Administrator, User")]
         public IActionResult TestList()
         {
-            return View(_context.Tests.ToList());
+            if(!User.IsInRole("Administrator"))
+                return View(_context.Tests.Where(t => !t.Hidden).ToList());
+            else
+                return View(_context.Tests.ToList());
         }
     }
 }

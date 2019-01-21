@@ -25,7 +25,7 @@
     @foreach (var item in Model) {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Name)
+                    @(item.Hidden ? item.Name + Localizer["Hidden"].Value : item.Name)
                 </td>
                 <td>
                     <a class="btn btn-success" href="/PerformTest/Test?testID=@(item.Id)&questionNumber=1&clearCookies=true">@(ViewData["StartTesting"])</a>

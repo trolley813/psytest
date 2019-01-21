@@ -51,5 +51,35 @@ namespace psytest.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
+        // GET: ManageTests/ToggleHide/5
+        public async Task<IActionResult> ToggleHide(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var test = await _context.Tests
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (test == null)
+            {
+                return NotFound();
+            }
+
+            return View(test);
+        }
+
+        // POST: ManageTests/ToggleHide/5
+        [HttpPost, ActionName("ToggleHide")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ToggleHideConfirmed(int id)
+        {
+            var test = await _context.Tests.FindAsync(id);
+            test.Hidden = !test.Hidden;
+            _context.Update(test);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

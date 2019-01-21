@@ -120,6 +120,9 @@
   <data name="ChooseTest" xml:space="preserve">
     <value>Выберите тест</value>
   </data>
+  <data name="Hidden" xml:space="preserve">
+    <value> [Скрыт]</value>
+  </data>
   <data name="StartTesting" xml:space="preserve">
     <value>Начать тестирование</value>
   </data>

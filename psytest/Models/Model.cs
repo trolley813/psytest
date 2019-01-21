@@ -26,6 +26,7 @@ namespace psytest.Models
             );         
 
             builder.Entity<Test>().Property(t => t.Id).ValueGeneratedOnAdd();
+            builder.Entity<Test>().Property(t => t.Hidden).HasDefaultValue(false);
             builder.Entity<Test>().HasMany(t => t.Questions).WithOne(q => q.Test);
             builder.Entity<Test>().Property(t => t.MetricsDescriptions).HasConversion(
                 v => JsonConvert.SerializeObject(v),

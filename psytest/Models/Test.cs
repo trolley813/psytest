@@ -9,6 +9,7 @@ namespace psytest.Models
         public String Name { get; set; }
         public String Instruction { get; set; }
         public List<Question> Questions { get; set; }
+        public bool Hidden { get; set; }
 
         // JS code
         public String MetricsComputeScript { get; set; }

@@ -12,6 +12,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.Name)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Hidden)
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -22,7 +25,18 @@
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                @Html.DisplayFor(modelItem => item.Hidden)
+            </td>
+            <td>
+                @if (item.Hidden)
+                {
+                    <a class="btn btn-warning" asp-action="ToggleHide" asp-route-id="@item.Id">Show</a>
+                }
+                else
+                {
+                    <a class="btn btn-warning" asp-action="ToggleHide" asp-route-id="@item.Id">Hide</a>
+                }
+                <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
             </td>
         </tr>
 }
