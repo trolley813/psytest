@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace psytest.Controllers
 {
@@ -61,7 +62,7 @@ namespace psytest.Controllers
             return View();
         }
 
-        public IActionResult ExcelExport()
+        public IActionResult ExcelExport(bool delete = false)
         {
             var users = userManager.Users.Select(u => new { u.Id, User = u }).ToDictionary(u => u.Id, u => u.User);
             var tests = testContext.Tests.Select(t => new { t.Id, t.Name, t.MetricsDescriptions }).ToDictionary(t => t.Id, t => new { t.Name, t.MetricsDescriptions });
@@ -135,6 +136,17 @@ namespace psytest.Controllers
                 stream.CopyTo(memory);
             }
             memory.Position = 0;
+
+            // Danger
+            if (delete)
+            {
+                var allTests = testContext.Tests.ToArray();
+                testContext.Tests.RemoveRange(allTests);
+                testContext.SaveChanges();
+                // restart the sequence from 1 (currently hardcoded to Postgres)
+                testContext.Database.ExecuteSqlCommand("SELECT setval('\"TestResults_Id_seq\"', 1, FALSE)");
+            }
+
             return File(memory, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
         }
     }
