@@ -140,11 +140,11 @@ namespace psytest.Controllers
             // Danger
             if (delete)
             {
-                var allTests = testContext.Tests.ToArray();
-                testContext.Tests.RemoveRange(allTests);
-                testContext.SaveChanges();
+                var allResults = resultContext.TestResults.ToArray();
+                resultContext.TestResults.RemoveRange(allResults);
+                resultContext.SaveChanges();
                 // restart the sequence from 1 (currently hardcoded to Postgres)
-                testContext.Database.ExecuteSqlCommand("SELECT setval('\"TestResults_Id_seq\"', 1, FALSE)");
+                resultContext.Database.ExecuteSqlCommand("SELECT setval('\"TestResults_Id_seq\"', 1, FALSE)");
             }
 
             return File(memory, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
