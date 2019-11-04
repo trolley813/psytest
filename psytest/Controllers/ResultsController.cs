@@ -43,10 +43,10 @@ namespace psytest.Controllers
                     { "UserDOB", users[t.UserId].DOB },
                     { "TestingDate", t.TestingDate },
                     { "UserAge", StatsHelper.GetAge(t.TestingDate, users[t.UserId].DOB) },
-                    { "Test", tests.GetValueOrDefault(t.TestId, new {Name = "(no data)", MetricsDescriptions = new Dictionary<String, String>()}).Name },
+                    { "Test", tests.GetValueOrDefault(t.TestId, new {Name = $"(no data - ID {t.TestId})", MetricsDescriptions = new Dictionary<String, String>()}).Name },
                     { "Metrics", t.Metrics.Select(m => new {
-                        Key = tests.GetValueOrDefault(t.TestId, new {Name = "(no data)", MetricsDescriptions = new Dictionary<String, String>()})
-                              .MetricsDescriptions.GetValueOrDefault(m.Key, "(unknown metric)"),
+                        Key = tests.GetValueOrDefault(t.TestId, new {Name = $"(no data - ID {t.TestId})", MetricsDescriptions = new Dictionary<String, String>()})
+                              .MetricsDescriptions.GetValueOrDefault(m.Key, $"(unknown metric - {m.Key})"),
                         Value = m.Value
                          }).ToDictionary(m => m.Key, m => m.Value) }
                 }).ToArray();
@@ -74,10 +74,10 @@ namespace psytest.Controllers
                     { "TestingDate", t.TestingDate },
                     { "UserAge", StatsHelper.GetAge(t.TestingDate, users[t.UserId].DOB) },
                     { "TestID", t.TestId },
-                    { "Test", tests.GetValueOrDefault(t.TestId, new {Name = "(no data)", MetricsDescriptions = new Dictionary<String, String>()}).Name },
+                    { "Test", tests.GetValueOrDefault(t.TestId, new {Name = $"(no data - ID {t.TestId})", MetricsDescriptions = new Dictionary<String, String>()}).Name },
                     { "Metrics", t.Metrics.Select(m => new {
-                        Key = tests.GetValueOrDefault(t.TestId, new {Name = "(no data)", MetricsDescriptions = new Dictionary<String, String>()})
-                              .MetricsDescriptions.GetValueOrDefault(m.Key, "(unknown metric)"),
+                        Key = tests.GetValueOrDefault(t.TestId, new {Name = $"(no data - ID {t.TestId})", MetricsDescriptions = new Dictionary<String, String>()})
+                              .MetricsDescriptions.GetValueOrDefault(m.Key, $"(unknown metric - {m.Key})"),
                         Value = m.Value
                          }).ToDictionary(m => m.Key, m => m.Value) }
                 }).ToArray();
