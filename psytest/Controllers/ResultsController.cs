@@ -69,10 +69,10 @@ namespace psytest.Controllers
             var results = resultContext.TestResults.Select(
                 t => new Dictionary<string, object>
                 {
-                    { "UserName", users[t.UserId].Name },
-                    { "UserDOB", users[t.UserId].DOB },
+                    { "UserName", users.ContainsKey(t.UserId) ? users[t.UserId].Name : "(unknown user)" },
+                    { "UserDOB",  users.ContainsKey(t.UserId) ? users[t.UserId].DOB : DateTime.MinValue },
                     { "TestingDate", t.TestingDate },
-                    { "UserAge", StatsHelper.GetAge(t.TestingDate, users[t.UserId].DOB) },
+                    { "UserAge", StatsHelper.GetAge(t.TestingDate, users.ContainsKey(t.UserId) ? users[t.UserId].DOB : DateTime.MinValue) },
                     { "TestID", t.TestId },
                     { "Test", tests.GetValueOrDefault(t.TestId, new {Name = $"(no data - ID {t.TestId})", MetricsDescriptions = new Dictionary<String, String>()}).Name },
                     { "Metrics", t.Metrics.Select(m => new {
@@ -102,7 +102,7 @@ namespace psytest.Controllers
                     row.CreateCell(2).SetCellValue("Testing Date");
                     row.CreateCell(3).SetCellValue("Age");
                     int idx = 4;
-                    foreach (var m in t.Value.MetricsDescriptions)
+                    foreach (var m in t.Value.MetricsDescriptions ?? new Dictionary<string, string>())
                     {
                         row.CreateCell(idx++).SetCellValue(m.Value);
                     }
@@ -113,6 +113,11 @@ namespace psytest.Controllers
                 for (int i = 0; i < results.Count(); i++)
                 {
                     var testID = results[i]["TestID"] as int? ?? 0;
+                    if (!excelSheets.ContainsKey(testID))
+                    {
+                        excelSheets.Add(testID, workbook.CreateSheet($"Test {testID} - DELETED"));
+                        rowCounts[testID] = 0;
+                    }
                     var row = excelSheets[testID].CreateRow(++rowCounts[testID]);
                     row.CreateCell(0).SetCellValue((results[i]["UserName"] as String) ?? "[unknown user]");
                     row.CreateCell(1).SetCellValue((results[i]["UserDOB"] as DateTime?) ?? DateTime.MinValue);
